@@ -10,16 +10,29 @@ times 33 db 0   ; add 33 bytes after short jump as described in BPB (Boot Parame
 start:
     jmp 0x7C0:step2 ; code segment changed to that address
 
+
+
 step2:    
     cli ; clear interrupts
     ; ensure the segment registers and stack pointer to show rigth addreses
-    mov ax, 0x7C0
+    mov ax, 0x00
     mov ds, ax
     mov es, ax
     mov ss, ax
     mov sp, 0x7c00
     sti ; enable interrupts
 
+;----------------------------------
+;   SET HANDLER FOR ZEROth INTERRUPT
+;   mov word[ss:0x00], handler_zero     ;offset
+;   mov word[ss:0x02], 0x7C0            ;segment
+;   
+;   GENERATE INTERRUPT
+;   int 0
+;OR  
+;   mov ax ,0x0
+;   div ax
+;----------------------------------
 
     ;move address of message to si register
     mov si, message ; si: rsource index general purpose register
@@ -62,3 +75,16 @@ times 510-($ - $$) db 0
 ;    Since endiannes considering, we write flipped
 ; */
 dw 0xAA55 
+
+
+
+; Set your own interrupt handler, i.e. interrupt zero
+;
+;handler_zero:
+;   mov ah, 0eh
+;   mov al, 'A'
+;   mov bx, 0x08
+;   int 0x10
+;   iret
+;
+;
