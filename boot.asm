@@ -1,5 +1,8 @@
-ORG 0x0 ; the first instruction is at origin
+ORG 0x7C00 ; the first instruction is at origin
 BITS 16
+
+CODE_SEG equ gdt_code - gdt_start   
+DATA_SEG equ gdt_data - gdt_start  
 
 _start:
     jmp short start
@@ -8,7 +11,7 @@ _start:
 times 33 db 0   ; add 33 bytes after short jump as described in BPB (Boot Parameter Table) table.
 
 start:
-    jmp 0x7C0:step2 ; code segment changed to that address
+    jmp 0:step2 ; code segment changed to that address
 
 
 
@@ -34,10 +37,52 @@ step2:
 ;   div ax
 ;----------------------------------
 
+.load_protected:    ;
+    cli             ; clear interrupts
+    lgdt[gdt_descriptor]
+    mov eax, cr0
+    or eax, 0x1
+    mov cr0, eax
+    jmp CODE_SEG:load32
+
+
+; GDT
+gdt_start:
+gdt_null:
+    dd 0x0
+    dd 0x0
+
+; offset 0x8
+gdt_code:     ; CS SHOULD POINT TO THIS
+    dw 0xffff ; Segment limit first 0-15 bits
+    dw 0      ; Base first 0-15 bits
+    db 0      ; Base 16-23 bits
+    db 0x9a   ; Access byte
+    db 11001111b ; High 4 bit flags and the low 4 bit flags
+    db 0        ; Base 24-31 bits
+
+; offset 0x10
+gdt_data:      ; DS, SS, ES, FS, GS
+    dw 0xffff ; Segment limit first 0-15 bits
+    dw 0      ; Base first 0-15 bits
+    db 0      ; Base 16-23 bits
+    db 0x92   ; Access byte
+    db 11001111b ; High 4 bit flags and the low 4 bit flags
+    db 0        ; Base 24-31 bits
+
+gdt_end:
+
+;gdt_start means starting address of the GDT table
+;and
+;gdt_end represents the end point of the table
+;therefore, we can calculate the size of the table as shown in below
+gdt_descriptor:
+    dw gdt_end - gdt_start-1
+    dd gdt_start
     ;move address of message to si register
-    mov si, message ; si: rsource index general purpose register
-    call print
-    jmp $
+    ;mov si, message ; si: rsource index general purpose register
+    ;call print
+    ;jmp $
 
 print:
     mov bx, 0
@@ -68,6 +113,10 @@ print_char:
     ret
 
 message: db 'Hello World!', 0
+
+ [BITS 32]
+ load32:
+    jmp $
 
 ;/* pad zeros to code segment of resulted binary file of the program */
 times 510-($ - $$) db 0
