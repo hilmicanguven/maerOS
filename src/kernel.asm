@@ -1,6 +1,6 @@
 [BITS 32]
 
-global _start   ; global because it is known for public (when creating object file, it is not seen)
+global _start   ; global because it is known for public (otherwise, when creating object file, it is not seen)
 global kernel_registers
 extern kernel_main
 
