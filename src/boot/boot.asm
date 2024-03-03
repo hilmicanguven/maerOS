@@ -4,11 +4,10 @@ BITS 16
 CODE_SEG equ gdt_code - gdt_start   ; code segment offset
 DATA_SEG equ gdt_data - gdt_start   ; data segment offset
 
-_start:
-    jmp short start
-    nop
+jmp short start
+nop
 
-times 33 db 0   ; add 33 bytes after short jump as described in BPB (Boot Parameter Table) table.
+;times 33 db 0   ; add 33 bytes after short jump as described in BPB (Boot Parameter Table) table.
 
 start:
     jmp 0:step2 ; code segment changed to that address
@@ -83,20 +82,20 @@ gdt_descriptor:
     ;call print
     ;jmp $
 
-print:
-    mov bx, 0
-.loop:
-    ;  "loadsb" instruction do this
-    ;  -> move si register to al register
-    ;  ->  increment the si register value
-    ;
-    lodsb
-    cmp al, 0   ;do I reach to the end of the message
-    je .done
-    call print_char
-    jmp .loop
-.done:
-    ret
+; print:
+;     mov bx, 0
+; .loop:
+;     ;  "loadsb" instruction do this
+;     ;  -> move si register to al register
+;     ;  ->  increment the si register value
+;     ;
+;     lodsb
+;     cmp al, 0   ;do I reach to the end of the message
+;     je .done
+;     call print_char
+;     jmp .loop
+; .done:
+;     ret
 
     
     ; print char operation based on interrupt provided by BIOS
@@ -106,21 +105,89 @@ print:
     ; AH : OEh
     ; AL : characater to write (this is filled by loadsb instruciton)
 
-print_char:
-    mov ah, 0eh
-    int 0x10
+;print_char:
+;    mov ah, 0eh
+;    int 0x10
+;    ret
+
+;message: db 'Hello World message added with db instruction!', 0
+
+ ;[BITS 32]  ; indicates that code written for 32-bit processor arch.
+ ;load32:
+ ;
+ ;   ; enable the A20 line
+ ;   in al, 0x92     ; in and out instructions is used to access to processor bus
+ ;   or al, 2        ; this is how we communicate with the hardwre and motherboard
+ ;   out 0x92, al
+ ;   jmp $
+
+[BITS 32]
+load32:
+    ; load into kernel, and jump to it
+    mov eax, 1          ; starting sector that we want to load from
+    mov ecx, 100        ; total number of sectors we want to load
+    mov edi, 0x00100000
+    call ata_lba_read   ;talk with the driver and actually load sectors into memory
+    jmp CODE_SEG:0x00100000
+
+ata_lba_read:
+    mov ebx, eax, ; Backup the LBA
+    ; Send the highest 8 bits of the lba to hard disk controller
+    shr eax, 24
+    or eax, 0xE0 ; Select the  master drive
+    mov dx, 0x1F6
+    out dx, al
+    ; Finished sending the highest 8 bits of the lba
+
+    ; Send the total sectors to read
+    mov eax, ecx
+    mov dx, 0x1F2
+    out dx, al
+    ; Finished sending the total sectors to read
+
+    ; Send more bits of the LBA
+    mov eax, ebx ; Restore the backup LBA
+    mov dx, 0x1F3
+    out dx, al
+    ; Finished sending more bits of the LBA
+
+    ; Send more bits of the LBA
+    mov dx, 0x1F4
+    mov eax, ebx ; Restore the backup LBA
+    shr eax, 8
+    out dx, al
+    ; Finished sending more bits of the LBA
+
+    ; Send upper 16 bits of the LBA
+    mov dx, 0x1F5
+    mov eax, ebx ; Restore the backup LBA
+    shr eax, 16
+    out dx, al
+    ; Finished sending upper 16 bits of the LBA
+
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al
+
+    ; Read all sectors into memory
+.next_sector:
+    push ecx
+
+; Checking if we need to read
+.try_again:
+    mov dx, 0x1f7
+    in al, dx
+    test al, 8
+    jz .try_again
+
+; We need to read 256 words at a time
+    mov ecx, 256
+    mov dx, 0x1F0
+    rep insw
+    pop ecx
+    loop .next_sector
+    ; End of reading sectors into memory
     ret
-
-message: db 'Hello World!', 0
-
- [BITS 32]  ; indicates that code written for 32-bit processor arch.
- load32:
-
-    ; enable the A20 line
-    in al, 0x92     ; in and out instructions is used to access to processor bus
-    or al, 2        ; this is how we communicate with the hardwre and motherboard
-    out 0x92, al
-    jmp $
 
 ;/* pad zeros to code segment of resulted binary file of the program */
 times 510-($ - $$) db 0
