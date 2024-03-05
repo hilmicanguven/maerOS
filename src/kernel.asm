@@ -34,7 +34,8 @@ _start:
     ; End remap of the master PIC
 
     ;call kernel_main
-
+    call kernel_main
+    
     jmp $
 
 kernel_registers:
