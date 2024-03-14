@@ -1,6 +1,6 @@
 section .asm
 
-/* Global declarations to be called by C files */
+; Global declarations to be called by C files
 global insb
 global insw
 global outb

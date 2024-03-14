@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "idt.h"
+#include "idt/idt.h"
 
 
 uint16_t* video_mem = 0;

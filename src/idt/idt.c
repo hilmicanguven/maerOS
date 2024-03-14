@@ -33,9 +33,9 @@ extern void int21h();
 extern void no_interrupt();
 
 
-void int21h_handler()
+void int21_handler()
 {
-    printf("Keyboard Pressed! \n");
+    print("Keyboard Pressed! \n");
     outb(0x20, 0x20);   //end of the interrupt
 }
 
@@ -77,7 +77,15 @@ void idt_init()
     }
 
     idt_set(0, idt_zero);
-    idt_set(0x21, int21h);
+    idt_set(0x21, int21_handler);
+    
+    /**
+     * 0x20 Timer interrupt kaynağına denk geliyor.
+     * Bu şekilde handler bağlarsak sürekli kesme üretir
+     * kesme belirli aralıklarla geldigi icin
+    */
+    //idt_set(0x20, int21_handler);
+    
     // idt_set(0x80, isr80h_wrapper);
 
 
