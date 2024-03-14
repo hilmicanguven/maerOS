@@ -6,6 +6,11 @@
 
 void kernel_main();
 
+/**
+ * @brief printf function uses VGA resource of BIOS
+*/
+void print(const char* str);
+
 #endif
 
 

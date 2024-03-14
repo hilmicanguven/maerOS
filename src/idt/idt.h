@@ -49,7 +49,19 @@ struct interrupt_frame
     uint32_t ss;
 } __attribute__((packed));
 
+/**
+ * @brief interrupt descriptor table initialization function. Descriptor table
+ * base and limit address are set. Some fundamental interrupts may be added to
+ * table. Finally, table is loaded to CPU
+*/
 void idt_init();
+
+/**
+ * @brief create descriptor for the given interrupt number at interrupt table
+ * descriptor fields are filled according to idt entry format.
+*/
+void idt_set(int interrupt_no, void* address);
+
 void enable_interrupts();
 void disable_interrupts();
 void isr80h_register_command(int command_id, ISR80H_COMMAND command);

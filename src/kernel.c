@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "idt.h"
+
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -24,7 +26,7 @@ uint16_t terminal_make_char(char c, char colour);
 void terminal_backspace();
 void terminal_writechar(char c, char colour);
 size_t strlen(const char* str);
-void print(const char* str);
+
 
 
 
@@ -33,6 +35,9 @@ void kernel_main()
     terminal_initialize();
     
     //print("H E L O \n WORLD");
+
+    /* interrupt descriptor table init*/
+    idt_init();
 
 }
 
