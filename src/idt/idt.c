@@ -2,6 +2,7 @@
 #include "config.h"
 #include "kernel.h"
 #include "memory/memory.h"
+#include "io/io.h"
 
 /**
  * @brief The table (IDT Interrupt Descriptor Table) which holds 
@@ -20,6 +21,31 @@ struct idtr_desc idtr_descriptor;
  * @brief load interrupt descriptor table via assembly instruction
 */
 extern void idt_load(struct idtr_desc* ptr);
+
+/**
+ * @brief The function responsible for calling the 0x21 interrupt handler function 
+*/
+extern void int21h();
+
+/**
+ * @brief when there is no interrupt set, decide what will happen in Assembly code
+*/
+extern void no_interrupt();
+
+
+void int21h_handler()
+{
+    printf("Keyboard Pressed! \n");
+    outb(0x20, 0x20);   //end of the interrupt
+}
+
+/**
+ * @brief when interrupt is not set, this handler is invoked
+*/
+void no_interrupt_handler()
+{
+    outb(0x20, 0x20);   //end of the interrupt
+}
 
 /**
  * @brief Handler for interrupt number zero
@@ -45,12 +71,13 @@ void idt_init()
     idtr_descriptor.limit = sizeof(idt_descriptors) -1;
     idtr_descriptor.base = (uint32_t) idt_descriptors;
 
-    // for (int i = 0; i < MAEROS_TOTAL_INTERRUPTS; i++)
-    // {
-    //     idt_set(i, interrupt_pointer_table[i]);
-    // }
+    for (int i = 0; i < MAEROS_TOTAL_INTERRUPTS; i++)
+    {
+        idt_set(i, no_interrupt);
+    }
 
     idt_set(0, idt_zero);
+    idt_set(0x21, int21h);
     // idt_set(0x80, isr80h_wrapper);
 
 

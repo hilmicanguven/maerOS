@@ -22,7 +22,7 @@ _start:
     or al, 2
     out 0x92, al
 
-    ; Remap the master PIC
+    ; Remap the master PIC (not to conflict processor reserved interrupts 0 - 0x1F)
     mov al, 00010001b
     out 0x20, al ; Tell master PIC
 
@@ -33,7 +33,10 @@ _start:
     out 0x21, al
     ; End remap of the master PIC
 
-    ;call kernel_main
+    ;Enable the interrupts
+    sti
+    
+    ;call kernel main function
     call kernel_main
     
     jmp $
