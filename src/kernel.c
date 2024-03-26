@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "idt/idt.h"
+#include "memory/heap/kheap.h"
 
 
 uint16_t* video_mem = 0;
@@ -36,8 +37,18 @@ void kernel_main()
     
     //print("H E L O \n WORLD");
 
+    kheap_init();
+
     /* interrupt descriptor table init*/
     idt_init();
+
+    void* ptr = kmalloc(50);
+    void* ptr2 = kmalloc(5000);
+
+    if(ptr || ptr2)
+    {
+        
+    }
 
 }
 

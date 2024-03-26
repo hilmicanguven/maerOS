@@ -3,7 +3,15 @@
 
 #define MAEROS_ALL_OK 0
 #define EIO 1
+
+/**
+ * @brief Error invalid argument
+*/
 #define EINVARG 2
+
+/**
+ * @brief Error no memory
+*/
 #define ENOMEM 3
 #define EBADPATH 4
 #define EFSNOTUS 5

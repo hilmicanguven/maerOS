@@ -22,7 +22,7 @@
 
 /**
  * @brief The bit mask for entry in the table, it masks whether block
- * is the first block is allocated
+ * is the first block allocated
 */
 #define HEAP_BLOCK_IS_FIRST  0b01000000
 
@@ -53,6 +53,14 @@ struct heap
 };
 
 int heap_create(struct heap* heap, void* ptr, void* end, struct heap_table* table);
+
+/**
+ * @brief Memory allocate from the heap region in unit of blocks
+*/
 void* heap_malloc(struct heap* heap, size_t size);
+
+/**
+ * @brief Free allocated memory from the heap
+*/
 void heap_free(struct heap* heap, void* ptr);
 #endif
