@@ -62,7 +62,6 @@ out:
     return res;
 }
 
-
 static uint32_t heap_align_value_to_upper(uint32_t val)
 {
     if ((val % MAEROS_HEAP_BLOCK_SIZE) == 0)
@@ -85,7 +84,7 @@ static int heap_get_entry_type(HEAP_BLOCK_TABLE_ENTRY entry)
 }
 
 /**
- * @brief Find a proper start block which suits given total block number
+ * @brief Find a proper start block which suits/fits given total block number
  * 
  * @note In order to better understanding, please refer to documentation. In summary,
  * we look consecutive blocks whose amount is equal to the required block number
@@ -197,6 +196,9 @@ out:
     return address;
 }
 
+/**
+ * @brief sign blocks as free when it freed.
+*/
 void heap_mark_blocks_free(struct heap* heap, int starting_block)
 {
     struct heap_table* table = heap->table;
@@ -204,6 +206,7 @@ void heap_mark_blocks_free(struct heap* heap, int starting_block)
     {
         HEAP_BLOCK_TABLE_ENTRY entry = table->entries[i];
         table->entries[i] = HEAP_BLOCK_TABLE_ENTRY_FREE;
+        /* if next block is not ours, then stops mark blocks as free and break the loop*/
         if (!(entry & HEAP_BLOCK_HAS_NEXT))
         {
             break;
@@ -211,6 +214,7 @@ void heap_mark_blocks_free(struct heap* heap, int starting_block)
     }
 }
 
+/** @brief calculate corresponding block number when user want to free an address*/
 int heap_address_to_block(struct heap* heap, void* address)
 {
     return ((int)(address - heap->saddr)) / MAEROS_HEAP_BLOCK_SIZE;
