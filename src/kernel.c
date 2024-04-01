@@ -4,11 +4,15 @@
 
 #include "idt/idt.h"
 #include "memory/heap/kheap.h"
-
+#include "memory/paging/paging.h"
+#include "memory/memory.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
+
+/** @brief 4gb chunk of paging */
+static struct paging_4gb_chunk* kernel_chunk = 0;
 
 /**
  * @brief Create proper value of 2 bytes to be printed on the screen
@@ -42,6 +46,15 @@ void kernel_main()
     /* interrupt descriptor table init*/
     idt_init();
 
+    // Setup paging
+    kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    
+    // Switch to kernel paging chunk
+    paging_switch(kernel_chunk);
+
+    // Enable paging
+    enable_paging();
+
     /* Enable interrupts */
     enable_interrupts();
 
@@ -54,6 +67,16 @@ void kernel_main()
     {
         
     }
+
+    /* Below code is doing tgis - map virtual to ptr
+    it means whatever to do virtual, it effect ptr */
+    uint32_t virtual = 0x1000;
+    char* ptr = kzalloc(4096);
+    paging_set(paging_4gb_chunk_get_directory(kernel_chunk), 
+                (void*)virtual,
+                (uint32_t) ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE
+                );
+    
 
 }
 
