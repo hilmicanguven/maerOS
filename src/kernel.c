@@ -58,24 +58,24 @@ void kernel_main()
     /* Enable interrupts */
     enable_interrupts();
 
-    void* ptr = kmalloc(50);
-    void* ptr2 = kmalloc(5000);
-    void* ptr3 = kmalloc(5600);
-    kfree(ptr);
-    void* ptr4 = kmalloc(50);
-    if(ptr || ptr2 || ptr3 || ptr4)
-    {
+    // void* ptr = kmalloc(50);
+    // void* ptr2 = kmalloc(5000);
+    // void* ptr3 = kmalloc(5600);
+    // kfree(ptr);
+    // void* ptr4 = kmalloc(50);
+    // if(ptr || ptr2 || ptr3 || ptr4)
+    // {
         
-    }
+    // }
 
-    /* Below code is doing tgis - map virtual to ptr
-    it means whatever to do virtual, it effect ptr */
-    uint32_t virtual = 0x1000;
-    char* ptr = kzalloc(4096);
-    paging_set(paging_4gb_chunk_get_directory(kernel_chunk), 
-                (void*)virtual,
-                (uint32_t) ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE
-                );
+    // /* Below code is doing tgis - map virtual to ptr
+    // it means whatever to do virtual, it effect ptr */
+    // uint32_t virtual = 0x1000;
+    // char* ptr = kzalloc(4096);
+    // paging_set(paging_4gb_chunk_get_directory(kernel_chunk), 
+    //             (void*)virtual,
+    //             (uint32_t) ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE
+    //             );
     
 
 }
