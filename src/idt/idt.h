@@ -62,7 +62,9 @@ void idt_init();
 */
 void idt_set(int interrupt_no, void* address);
 
+/** @brief Enabling interrupts (in asm file) */
 void enable_interrupts();
+/** @brief Disabling interrupts (in asm file) */
 void disable_interrupts();
 void isr80h_register_command(int command_id, ISR80H_COMMAND command);
 int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback);

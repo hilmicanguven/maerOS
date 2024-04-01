@@ -14,6 +14,19 @@ global no_interrupt
 ; Notice the first parameter to this function will be idt address
 global idt_load
 
+; enable and disable interrupts
+global enable_interrupts
+global disable_interrupts
+
+enable_interrupts:
+    ;Enable the interrupts
+    sti
+    ret
+
+disable_interrupts:
+    cli
+    ret
+
 idt_load:
     push ebp        ;push the base pointer
     

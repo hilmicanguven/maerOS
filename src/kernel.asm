@@ -32,9 +32,6 @@ _start:
     mov al, 00000001b
     out 0x21, al
     ; End remap of the master PIC
-
-    ;Enable the interrupts
-    sti
     
     ;call kernel main function
     call kernel_main
