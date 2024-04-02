@@ -68,15 +68,23 @@ void kernel_main()
         
     // }
 
-    // /* Below code is doing tgis - map virtual to ptr
-    // it means whatever to do virtual, it effect ptr */
-    // uint32_t virtual = 0x1000;
-    // char* ptr = kzalloc(4096);
-    // paging_set(paging_4gb_chunk_get_directory(kernel_chunk), 
-    //             (void*)virtual,
-    //             (uint32_t) ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE
-    //             );
-    
+    /* Below code is doing this - map virtual to ptr's addresses
+    it means whatever to do virtual, it effect ptr. 
+    For the below example, when writing 0x1000 will not effect physical 0x1000,
+    it effects physical address of ptr
+    */
+    uint32_t virtual = 0x1000;
+    char* ptr = kzalloc(4096);
+    paging_set(paging_4gb_chunk_get_directory(kernel_chunk), 
+                (void*)virtual,
+                (uint32_t) ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITEABLE
+                );
+    char* ptr2 = (char*) 0x1000;
+    ptr2[0] = 'A';
+    ptr2[1] = 'B';
+    print(ptr2);    
+    print(ptr);
+
 
 }
 
