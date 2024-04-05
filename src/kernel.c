@@ -7,6 +7,10 @@
 #include "memory/paging/paging.h"
 #include "memory/memory.h"
 
+#include "disk/disk.h"
+#include "fs/pparser.h"
+#include "string/string.h"
+
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
@@ -30,7 +34,6 @@ void terminal_putchar(int x, int y, char c, char colour);
 uint16_t terminal_make_char(char c, char colour);
 void terminal_backspace();
 void terminal_writechar(char c, char colour);
-size_t strlen(const char* str);
 
 
 
@@ -42,6 +45,9 @@ void kernel_main()
     //print("H E L O \n WORLD");
 
     kheap_init();
+
+    /* search and initialize a disk */
+    disk_search_and_init();
 
     /* interrupt descriptor table init*/
     idt_init();
@@ -73,6 +79,10 @@ void kernel_main()
     For the below example, when writing 0x1000 will not effect physical 0x1000,
     it effects physical address of ptr
     */
+
+/*  
+    -- mapping/paging test code block --
+
     uint32_t virtual = 0x1000;
     char* ptr = kzalloc(4096);
     paging_set(paging_4gb_chunk_get_directory(kernel_chunk), 
@@ -84,8 +94,14 @@ void kernel_main()
     ptr2[1] = 'B';
     print(ptr2);    
     print(ptr);
+*/
 
+    struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+    
+    if(root_path)
+    {
 
+    }
 }
 
 void print(const char* str)
@@ -163,13 +179,3 @@ void terminal_writechar(char c, char colour)
     }
 }
 
-size_t strlen(const char* str)
-{
-    size_t len = 0;
-    while(str[len])
-    {
-        len++;
-    }
-
-    return len;
-}
