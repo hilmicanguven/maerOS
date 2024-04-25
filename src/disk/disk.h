@@ -19,7 +19,8 @@ typedef struct disk
     int sector_size;
     /** @brief  The id of the disk */
     int id;    
-    //struct filesystem* filesystem;
+    /** @brief filesytem found at that disk*/
+    struct filesystem* filesystem;
     /** @brief The private data of our filesystem */
     void* fs_private;
 }disk_t;

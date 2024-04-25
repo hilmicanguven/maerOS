@@ -9,6 +9,29 @@ nop
 
 ;times 33 db 0   ; add 33 bytes after short jump as described in BPB (Boot Parameter Table) table.
 
+; FAT16 Header
+OEMIdentifier           db 'MAEROS  '   ;must be 8 bytes padded by spaces
+BytesPerSector          dw 0x200        ;512 bytes, it is fixed for the hardware
+SectorsPerCluster       db 0x80
+ReservedSectors         dw 200          ;reserved sectors are where our kernel would be and loaded
+FATCopies               db 0x02         ;2 FAT copies, original and back-up
+RootDirEntries          dw 0x40
+NumSectors              dw 0x00
+MediaType               db 0xF8
+SectorsPerFat           dw 0x100
+SectorsPerTrack         dw 0x20
+NumberOfHeads           dw 0x40
+HiddenSectors           dd 0x00
+SectorsBig              dd 0x773594
+
+; Extended BPB Boot Parameter Block (Dos 4.0)
+DriveNumber             db 0x80
+WinNTBit                db 0x00
+Signature               db 0x29
+VolumeID                dd 0xD105
+VolumeIDString          db 'MAEROS BOOT'    ; must be 11 bytes
+SystemIDString          db 'FAT16   '
+
 start:
     jmp 0:step2 ; code segment changed to that address
 

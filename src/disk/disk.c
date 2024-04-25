@@ -3,6 +3,7 @@
 #include "config.h"
 #include "status.h"
 #include "memory/memory.h"
+#include "fs/file.h"
 
 /** @brief disk structure to represents a disk in system (primary hard disk) */
 disk_t disk;
@@ -18,7 +19,7 @@ void disk_search_and_init()
     disk.type = MAEROS_DISK_TYPE_REAL;
     disk.sector_size = MAEROS_SECTOR_SIZE
     disk.id = 0;
-    //disk.filesystem = fs_resolve(&disk);
+    disk.filesystem = fs_resolve(&disk);
 }
 
 disk_t* disk_get(int index)
