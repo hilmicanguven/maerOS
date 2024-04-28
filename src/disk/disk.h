@@ -26,7 +26,8 @@ typedef struct disk
 }disk_t;
 
 
-/** @brief it searches and initialize a disk descriptor struct
+/** @brief it searches and initialize a disk descriptor struct 
+ * It also search for filesystem 
  * @note it is pretend to search for now, it assumes only one disk
 */
 void disk_search_and_init();

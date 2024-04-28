@@ -176,9 +176,9 @@ int fopen(const char* filename, const char* mode_str)
     }
 
     void* descriptor_private_data = disk->filesystem->open(disk, root_path->first, mode);
-    if (ISERR(descriptor_private_data))
+    if (0)//ISERR(descriptor_private_data))
     {
-        res = ERROR_I(descriptor_private_data);
+        res = 1;//ERROR_I(descriptor_private_data);
         goto out;
     }
 

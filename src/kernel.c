@@ -9,6 +9,8 @@
 
 #include "disk/disk.h"
 #include "fs/pparser.h"
+#include "fs/file.h"
+
 #include "string/string.h"
 
 uint16_t* video_mem = 0;
@@ -45,6 +47,9 @@ void kernel_main()
     //print("H E L O \n WORLD");
 
     kheap_init();
+
+    /* initiliaze file systems */
+    fs_init();
 
     /* search and initialize a disk */
     disk_search_and_init();

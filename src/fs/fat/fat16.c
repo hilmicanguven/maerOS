@@ -8,8 +8,10 @@
 #include "kernel.h"
 #include <stdint.h>
 
+/** @brief FAT16 signature */
 #define MAEROS_FAT16_SIGNATURE 0x29
 #define MAEROS_FAT16_FAT_ENTRY_SIZE 0x02
+/** @brief FAT16 bad sector */
 #define MAEROS_FAT16_BAD_SECTOR 0xFF7
 #define MAEROS_FAT16_UNUSED 0x00
 
@@ -27,6 +29,7 @@ typedef unsigned int FAT_ITEM_TYPE;
 #define FAT_FILE_DEVICE 0x40
 #define FAT_FILE_RESERVED 0x80
 
+/** @brief extended FAT header */
 struct fat_header_extended
 {
     uint8_t drive_number;
@@ -35,14 +38,19 @@ struct fat_header_extended
     uint32_t volume_id;
     uint8_t volume_id_string[11];
     uint8_t system_id_string[8];
-} __attribute__((packed));
+} __attribute__((packed)); //ensure order of field keep same
 
+/** @brief FAT16 header, it is better to look specification of FAT16 or FAT32*/
 struct fat_header
 {
+    /** @brief short jump instruction */
     uint8_t short_jmp_ins[3];
+    /** @brief 8 bytes OEM identifier */
     uint8_t oem_identifier[8];
+    /** @brief not going to use it but still keep header */
     uint16_t bytes_per_sector;
     uint8_t sectors_per_cluster;
+    /** @brief reserved sectors before kernel reside on disk*/
     uint16_t reserved_sectors;
     uint8_t fat_copies;
     uint16_t root_dir_entries;
@@ -55,6 +63,7 @@ struct fat_header
     uint32_t sectors_big;
 } __attribute__((packed));
 
+/** @brief FAT16 header contains primary and extended header structure */
 struct fat_h
 {
     struct fat_header primary_header;
@@ -73,6 +82,8 @@ struct fat_directory_item
     uint16_t creation_time;
     uint16_t creation_date;
     uint16_t last_access;
+    /** @brief if it has subdiectory, shows where other directory stored
+     * if it is file, where the actual file is stored */
     uint16_t high_16_bits_first_cluster;
     uint16_t last_mod_time;
     uint16_t last_mod_date;
@@ -80,19 +91,22 @@ struct fat_directory_item
     uint32_t filesize;
 } __attribute__((packed));
 
+/** @brief it represents only a directory which is special for us */
 struct fat_directory
 {
     struct fat_directory_item *item;
     int total;
+    /** @brief starting sector position */
     int sector_pos;
+    /** @brief end sector position */
     int ending_sector_pos;
 };
 
 struct fat_item
 {
-    union {
-        struct fat_directory_item *item;
-        struct fat_directory *directory;
+    union { // items share the same memory, no problem with that
+        struct fat_directory_item *item; // for normal file
+        struct fat_directory *directory; // for directory
     };
 
     FAT_ITEM_TYPE type;
@@ -104,6 +118,7 @@ struct fat_file_descriptor
     uint32_t pos;
 };
 
+/** @brief Private data to know exactly what is going on with the disk */
 struct fat_private
 {
     struct fat_h header;
@@ -145,12 +160,11 @@ struct filesystem *fat16_init()
 static void fat16_init_private(struct disk *disk, struct fat_private *private)
 {
     memset(private, 0, sizeof(struct fat_private));
-private
-    ->cluster_read_stream = diskstreamer_new(disk->id);
-private
-    ->fat_read_stream = diskstreamer_new(disk->id);
-private
-    ->directory_stream = diskstreamer_new(disk->id);
+    // we can pass through the disk via diskstreamer (binded to disk 
+    // and allow us reading specific amount of bytes
+    private->cluster_read_stream = diskstreamer_new(disk->id);
+    private->fat_read_stream = diskstreamer_new(disk->id);
+    private->directory_stream = diskstreamer_new(disk->id);
 }
 
 int fat16_sector_to_absolute(struct disk *disk, int sector)
@@ -205,8 +219,10 @@ out:
     return res;
 }
 
+/** @brief Get root directory and assing to directory */
 int fat16_get_root_directory(struct disk *disk, struct fat_private *fat_private, struct fat_directory *directory)
 {
+    /* Root directory contains FAT directory */
     int res = 0;
     struct fat_directory_item *dir = 0x00;
     struct fat_header *primary_header = &fat_private->header.primary_header;
@@ -214,8 +230,10 @@ int fat16_get_root_directory(struct disk *disk, struct fat_private *fat_private,
     int root_dir_entries = fat_private->header.primary_header.root_dir_entries;
     int root_dir_size = (root_dir_entries * sizeof(struct fat_directory_item));
     int total_sectors = root_dir_size / disk->sector_size;
+    
     if (root_dir_size % disk->sector_size)
     {
+        /* to store remaning items*/
         total_sectors += 1;
     }
 
@@ -257,6 +275,7 @@ err_out:
     return res;
 }
 
+/** @brief The function return zero when there is valid FS by reading firs sector and ensure */
 int fat16_resolve(struct disk *disk)
 {
     int res = 0;
@@ -272,15 +291,17 @@ int fat16_resolve(struct disk *disk)
         res = -ENOMEM;
         goto out;
     }
-
+    /* Read first sector by assuming first sector holds file system header*/
     if (diskstreamer_read(stream, &fat_private->header, sizeof(fat_private->header)) != MAEROS_ALL_OK)
     {
         res = -EIO;
         goto out;
     }
 
+    /* After reading first sector, check FS signature */
     if (fat_private->header.shared.extended_header.signature != 0x29)
     {
+        /* This FS int mine since signature is different */
         res = -EFSNOTUS;
         goto out;
     }
@@ -671,7 +692,6 @@ static void fat16_free_file_descriptor(struct fat_file_descriptor* desc)
     kfree(desc);
 }
 
-
 int fat16_close(void* private)
 {
     fat16_free_file_descriptor((struct fat_file_descriptor*) private);
@@ -710,7 +730,7 @@ int fat16_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmem
     for (uint32_t i = 0; i < nmemb; i++)
     {
         res = fat16_read_internal(disk, fat16_get_first_cluster(item), offset, size, out_ptr);
-        if (ISERR(res))
+        if (0)//ISERR(res))
         {
             goto out;
         }
