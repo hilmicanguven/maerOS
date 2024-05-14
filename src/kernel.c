@@ -101,12 +101,17 @@ void kernel_main()
     print(ptr);
 */
 
-    struct path_root* root_path = pathparser_parse("0:/bin/shell.exe", NULL);
-    
-    if(root_path)
+/* -------fopen function, reading a file from disk can be test as shown below-------
+    int fd = fopen("0:/hello.txt", "r");
+    if(fd)
     {
-
+        print("We opened hello.txt \n");
+        char buf[6];
+        fread(buf, 10, 1, fd);
+        print(buf);
     }
+*/
+    while(1);
 }
 
 void print(const char* str)

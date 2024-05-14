@@ -7,6 +7,7 @@
 #include "status.h"
 #include "kernel.h"
 #include <stdint.h>
+#include "config.h"
 
 /** @brief FAT16 signature */
 #define MAEROS_FAT16_SIGNATURE 0x29
@@ -622,6 +623,7 @@ struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct fat_dire
     return f_item;
 }
 
+/** @brief It return item or directory */
 struct fat_item *fat16_get_directory_entry(struct disk *disk, struct path_part *path)
 {
     struct fat_private *fat_private = disk->fs_private;
@@ -730,7 +732,7 @@ int fat16_read(struct disk *disk, void *descriptor, uint32_t size, uint32_t nmem
     for (uint32_t i = 0; i < nmemb; i++)
     {
         res = fat16_read_internal(disk, fat16_get_first_cluster(item), offset, size, out_ptr);
-        if (0)//ISERR(res))
+        if (ISERR(res))
         {
             goto out;
         }

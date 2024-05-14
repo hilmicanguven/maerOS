@@ -36,6 +36,13 @@ struct disk;
 
 /** @brief Open function prototype */
 typedef void*(*FS_OPEN_FUNCTION)(struct disk* disk, struct path_part* path, FILE_MODE mode);
+
+/** @brief file system read function prototype
+ * low level system should implement read function according to this prototype
+ * 
+ * @param size how many bytes we are reading
+ * @param nmemb how many of those blocks we want to read (total read bytes is = size*nmemb)
+*/
 typedef int (*FS_READ_FUNCTION)(struct disk* disk, void* private, uint32_t size, uint32_t nmemb, char* out);
 
 /** @brief The function resolved whether disk has desired file system or no, i.e. FAT16*/

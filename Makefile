@@ -6,7 +6,7 @@
 FILES = ./build/kernel.asm.o ./build/kernel.o ./build/idt/idt.asm.o ./build/idt/idt.o 	\
 		./build/memory/memory.o ./build/io/io.asm.o ./build/memory/heap/heap.o 			\
 		./build/memory/heap/kheap.o ./build/memory/paging/paging.o ./build/memory/paging/paging.asm.o \
-		./build/disk/disk.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o \
+		./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o \
 		./build/string/string.o
 
 INCLUDES = -I./src
@@ -24,8 +24,8 @@ all: clean ./bin/boot.bin ./bin/kernel.bin
 	sudo mount -t vfat ./bin/os.bin /mnt/d
 	# Copy a file over
 	sudo cp ./hello.txt /mnt/d
-	sudo cp ./programs/blank/blank.elf /mnt/d
-	sudo cp ./programs/shell/shell.elf /mnt/d
+#	sudo cp ./programs/blank/blank.elf /mnt/d
+#	sudo cp ./programs/shell/shell.elf /mnt/d
 	
 #below creates 512 byte long binary file
 #nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin

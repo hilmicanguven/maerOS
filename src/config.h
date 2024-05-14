@@ -32,7 +32,7 @@
 #define MAEROS_HEAP_TABLE_ADDRESS 0x00007E00
 
 /** @brief Sector size of a hard disk */
-#define MAEROS_SECTOR_SIZE
+#define MAEROS_SECTOR_SIZE 512
 
 /** @brief maximum path length of file system */
 #define MAEROS_MAX_PATH 108
