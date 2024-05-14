@@ -37,6 +37,11 @@ uint16_t terminal_make_char(char c, char colour);
 void terminal_backspace();
 void terminal_writechar(char c, char colour);
 
+/** @brief the function printing error message to screen and stops kernel 
+ * 
+ * @note it is used when we can not recover to kernel
+*/
+void panic(const char* msg);
 
 
 
@@ -101,17 +106,28 @@ void kernel_main()
     print(ptr);
 */
 
-/* -------fopen function, reading a file from disk can be test as shown below-------
-    int fd = fopen("0:/hello.txt", "r");
+/* -------fopen function, reading a file from disk can be test as shown below--------*/
+/*  int fd = fopen("0:/hello.txt", "r");
     if(fd)
     {
         print("We opened hello.txt \n");
         char buf[6];
+        fseek(fd , 2 , SEEK_SET);
         fread(buf, 10, 1, fd);
         print(buf);
+        struct file_stat s;
+        fstat(fd, &s);
+        fclose(fd);
     }
 */
+
     while(1);
+}
+
+void panic(const char* msg)
+{
+    print(msg);
+    while(1) {}
 }
 
 void print(const char* str)

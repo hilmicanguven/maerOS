@@ -700,6 +700,7 @@ int fat16_close(void* private)
     return 0;
 }
 
+/** @brief FAT16 stst function return information of a file */
 int fat16_stat(struct disk* disk, void* private, struct file_stat* stat)
 {
     int res = 0;
@@ -712,7 +713,10 @@ int fat16_stat(struct disk* disk, void* private, struct file_stat* stat)
     }
 
     struct fat_directory_item* ritem = desc_item->item;
+    
+    /* The information below returns to the user **/
     stat->filesize = ritem->filesize;
+    /* */
     stat->flags = 0x00;
 
     if (ritem->attribute & FAT_FILE_READ_ONLY)

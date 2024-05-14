@@ -34,6 +34,15 @@ typedef unsigned int FILE_STAT_FLAGS;
 /** @brief */
 struct disk;
 
+/** @brief return information about a file*/
+struct file_stat
+{
+    /** @brief flags to show file permission */
+    FILE_STAT_FLAGS flags;
+    /** @brief size of the file */
+    uint32_t filesize;
+};
+
 /** @brief Open function prototype */
 typedef void*(*FS_OPEN_FUNCTION)(struct disk* disk, struct path_part* path, FILE_MODE mode);
 
@@ -50,14 +59,8 @@ typedef int (*FS_RESOLVE_FUNCTION)(struct disk* disk);
 
 typedef int (*FS_CLOSE_FUNCTION)(void* private);
 
+/** @brief file system seek function*/
 typedef int (*FS_SEEK_FUNCTION)(void* private, uint32_t offset, FILE_SEEK_MODE seek_mode);
-
-
-struct file_stat
-{
-    FILE_STAT_FLAGS flags;
-    uint32_t filesize;
-};
 
 typedef int (*FS_STAT_FUNCTION)(struct disk* disk, void* private, struct file_stat* stat);
 
@@ -93,6 +96,9 @@ void fs_init();
 int fopen(const char* filename, const char* mode_str);
 int fseek(int fd, int offset, FILE_SEEK_MODE whence);
 int fread(void* ptr, uint32_t size, uint32_t nmemb, int fd);
+
+/** @brief The function shall obtain information about an open file associated with the file descriptor fildes, 
+ * and shall write it to the area pointed to by stat.*/
 int fstat(int fd, struct file_stat* stat);
 int fclose(int fd);
 
