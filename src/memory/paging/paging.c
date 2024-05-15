@@ -42,11 +42,13 @@ void paging_switch(struct paging_4gb_chunk *directory)
     current_directory = directory->directory_entry;
 }
 
+/** @brief freed each entry in given chunk */
 void paging_free_4gb(struct paging_4gb_chunk *chunk)
 {
     for (int i = 0; i < 1024; i++)
     {
         uint32_t entry = chunk->directory_entry[i];
+        /* lowest bits are flags, clear to get real address aligned to 0x1000*/
         uint32_t *table = (uint32_t *)(entry & 0xfffff000);
         kfree(table);
     }

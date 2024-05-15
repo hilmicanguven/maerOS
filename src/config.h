@@ -42,17 +42,31 @@
 
 #define MAEROS_MAX_PATH 108
 
+/** @brief number of GDT segments*/
 #define MAEROS_TOTAL_GDT_SEGMENTS 6
 
+/** @brief Where default registers are there when task used this when it is started initially */
 #define MAEROS_PROGRAM_VIRTUAL_ADDRESS 0x400000
+
+/** @brief 16Kb stack size as default */
 #define MAEROS_USER_PROGRAM_STACK_SIZE 1024 * 16
+
+/** @brief it is stack address (virtual), it can be same for all task (it physically different) */
 #define MAEROS_PROGRAM_VIRTUAL_STACK_ADDRESS_START 0x3FF000
+
+/** @brief in intel, stack grows from from top do down */
 #define MAEROS_PROGRAM_VIRTUAL_STACK_ADDRESS_END MAEROS_PROGRAM_VIRTUAL_STACK_ADDRESS_START - MAEROS_USER_PROGRAM_STACK_SIZE
 
 #define MAEROS_MAX_PROGRAM_ALLOCATIONS 1024
 #define MAEROS_MAX_PROCESSES 12
 
+/** @brief User data segment which means user stack 
+ * @note 0x23 comes from GDT table, named structure "gdt_real"
+*/
 #define USER_DATA_SEGMENT 0x23
+/** @brief User code segment 
+* @note 0x23 comes from GDT table, named structure "gdt_real"
+*/
 #define USER_CODE_SEGMENT 0x1b
 
 #define MAEROS_MAX_ISR80H_COMMANDS 1024

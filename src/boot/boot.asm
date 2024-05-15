@@ -73,6 +73,8 @@ gdt_null:
     dd 0x0  ; 64bit null descriptor
     dd 0x0  ; 64bit null descriptor
 
+
+; Later we implement these in C code, struct gdt
 ; offset 0x8
 gdt_code:     ; CS SHOULD POINT TO THIS
     dw 0xffff ; Segment limit first 0-15 bits

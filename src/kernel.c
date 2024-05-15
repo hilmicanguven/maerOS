@@ -12,6 +12,10 @@
 #include "fs/file.h"
 
 #include "string/string.h"
+#include "config.h"
+#include "gdt/gdt.h"
+
+#include "task/tss.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -43,14 +47,27 @@ void terminal_writechar(char c, char colour);
 */
 void panic(const char* msg);
 
-
+struct tss tss;
+struct gdt gdt_real[MAEROS_TOTAL_GDT_SEGMENTS];
+struct gdt_structured gdt_structured[MAEROS_TOTAL_GDT_SEGMENTS] = {
+    {.base = 0x00, .limit = 0x00, .type = 0x00},                 // NULL Segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a},           // Kernel code segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x92},           // Kernel data segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf8},           // User code segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf2},           // User data segment
+    {.base = (uint32_t)&tss, .limit=sizeof(tss), .type = 0xE9}   // TSS Segment
+};
 
 void kernel_main()
 {
     terminal_initialize();
     
     //print("H E L O \n WORLD");
+    memset(gdt_real, 0x00, sizeof(gdt_real));
+    gdt_structured_to_gdt(gdt_real, gdt_structured, MAEROS_TOTAL_GDT_SEGMENTS);
 
+    // Load the gdt
+    gdt_load(gdt_real, sizeof(gdt_real));
     kheap_init();
 
     /* initiliaze file systems */
@@ -61,6 +78,15 @@ void kernel_main()
 
     /* interrupt descriptor table init*/
     idt_init();
+
+    // Setup the TSS
+    memset(&tss, 0x00, sizeof(tss));
+    tss.esp0 = 0x600000;    //where kernel stack is located
+    tss.ss0 = KERNEL_DATA_SELECTOR;
+
+    // Load the TSS, 0x28 is because that would be the offset in the GDT
+    // in the gdt_real once we pass this structure to the function
+    tss_load(0x28);
 
     // Setup paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
