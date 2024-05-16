@@ -63,7 +63,10 @@ int task_page_task(struct task* task);
 
 void task_run_first_ever_task();
 
+/** @brief the function will drop us into userland */
 void task_return(struct registers* regs);
+
+/** @brief restore general purpose registers in assembly */
 void restore_general_purpose_registers(struct registers* regs);
 void user_registers();
 

@@ -17,7 +17,7 @@ FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign
 
 #all label says these
 #	I need a file named: 		./bin/boot.bin, /bin/kernel.bin (these will be created)
-all: clean ./bin/boot.bin ./bin/kernel.bin
+all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 	rm -rf ./bin/os.bin
 #	add bootloader to our os.bin (first sector of binary file)
 	dd if=./bin/boot.bin >> ./bin/os.bin	
@@ -86,8 +86,14 @@ all: clean ./bin/boot.bin ./bin/kernel.bin
 ./build/io/io.asm.o: ./src/io/io.asm
 	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
 
+#user land programs
+user_programs:
+	cd ./programs/blank && $(MAKE) all
 
-clean:
+user_programs_clean:
+	cd ./programs/blank && $(MAKE) clean
+
+clean: user_programs_clean
 	rm -rf ./bin/boot.bin
 	rm -rf ./bin/kernel.bin
 	rm -rf ./bin/os.bin

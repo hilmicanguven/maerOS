@@ -121,6 +121,7 @@ void task_next()
     task_return(&next_task->registers);
 }
 
+/** @brief changing current/running task, by changing page directory*/
 int task_switch(struct task *task)
 {
     current_task = task;
@@ -192,6 +193,8 @@ void task_current_save_state(struct interrupt_frame *frame)
     task_save_state(task, frame);
 }
 
+/** @brief Task page takes us out of the kernel page directory and 
+ * loads us into the task page directory.*/
 int task_page()
 {
     user_registers();
@@ -206,6 +209,7 @@ int task_page_task(struct task* task)
     return 0;
 }
 
+/** @brief runs first(initial) task */
 void task_run_first_ever_task()
 {
     if (!current_task)

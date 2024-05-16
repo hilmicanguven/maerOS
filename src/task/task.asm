@@ -5,6 +5,9 @@ global restore_general_purpose_registers
 global task_return
 global user_registers
 
+; normally this operations is done automatically when returning from interrupt
+; but this is fake one. just trigger returning to userland
+
 ; void task_return(struct registers* regs);
 task_return:
     mov ebp, esp
@@ -12,7 +15,7 @@ task_return:
     ; PUSH THE STACK ADDRESS
     ; PUSH THE FLAGS
     ; PUSH THE CODE SEGMENT
-    ; PUSH IP
+    ; PUSH IP (program counter)
 
     ; Let's access the structure passed to us
     mov ebx, [ebp+4]
@@ -64,7 +67,7 @@ restore_general_purpose_registers:
 
 ; void user_registers()
 user_registers:
-    mov ax, 0x23
+    mov ax, 0x23 ; 0x23 is user data segment
     mov ds, ax
     mov es, ax
     mov fs, ax
