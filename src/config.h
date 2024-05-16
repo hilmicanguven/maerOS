@@ -57,7 +57,12 @@
 /** @brief in intel, stack grows from from top do down */
 #define MAEROS_PROGRAM_VIRTUAL_STACK_ADDRESS_END MAEROS_PROGRAM_VIRTUAL_STACK_ADDRESS_START - MAEROS_USER_PROGRAM_STACK_SIZE
 
+/** @brief A process can malloc memory for this amount of maximum
+ * @note each malloc is stored in an array specific to this process
+ */
 #define MAEROS_MAX_PROGRAM_ALLOCATIONS 1024
+
+/** @brief Maximum number of process allowed */
 #define MAEROS_MAX_PROCESSES 12
 
 /** @brief User data segment which means user stack 

@@ -146,7 +146,7 @@ void kernel_main()
         fclose(fd);
     }
 */
-
+    print("Kernel Start");
     while(1);
 }
 

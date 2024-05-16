@@ -160,7 +160,7 @@ out:
     return res;
 }
 
-/** @brief we want to map between virt to val where
+/** @brief lowest map function... we want to map between virt to val where
  * virt : virtual address
  * val  : physical address
 */

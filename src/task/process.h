@@ -6,7 +6,9 @@
 #include "task.h"
 #include "config.h"
 
+/** @brief Process is accepted as elf file format */
 #define PROCESS_FILETYPE_ELF 0
+/** @brief Process is accepted as binary file */
 #define PROCESS_FILETYPE_BINARY 1
 
 typedef unsigned char PROCESS_FILETYPE;
@@ -29,33 +31,40 @@ struct process_arguments
     char** argv;
 };
 
+/** @brief The structure to define a what process is (can it be called PCB Process Control Block?)*/
 struct process
 {
-    // The process id
+    /** @brief The process id */
     uint16_t id;
 
+    /** @brief file name? */
     char filename[MAEROS_MAX_PATH];
 
     // The main process task
     struct task* task;
 
-    // The memory (malloc) allocations of the process
+    /** @brief The memory (malloc) allocations that have been made of the process 
+    When process is killed, free the memory previously allocated */
     struct process_allocation allocations[MAEROS_MAX_PROGRAM_ALLOCATIONS];
 
+    /** @brief */
     PROCESS_FILETYPE filetype;
 
+    /** @brief process type can be changed -> .txt, .elf, ..*/
     union
     {
-        // The physical pointer to the process memory.
+        /** @brief The physical pointer to the process loaded in memory. 
+         * It contains code and data, assuming binary process (no section or other headers)
+        */
         void* ptr;
         struct elf_file* elf_file;
     };
     
 
-    // The physical pointer to the stack memory
+    /** @brief The physical pointer to the stack memory */
     void* stack;
 
-    // The size of the data pointed to by "ptr"
+    /** @brief The size of the data pointed to by "ptr" */
     uint32_t size;
 
     struct keyboard_buffer

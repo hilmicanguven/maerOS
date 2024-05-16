@@ -6,7 +6,7 @@
 #include "memory/memory.h"
 #include "string/string.h"
 #include "memory/paging/paging.h"
-#include "loader/formats/elfloader.h"
+//#include "loader/formats/elfloader.h"
 #include "idt/idt.h"
 
 /** @brief The current task that is running*/
@@ -164,7 +164,7 @@ int copy_string_from_task(struct task* task, void* virtual, void* phys, int max)
     paging_map(task->page_directory, tmp, tmp, PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     paging_switch(task->page_directory);
     strncpy(tmp, virtual, max);
-    kernel_page();
+    //kernel_page();
 
     res = paging_set(task_directory, tmp, old_entry);
     if (res < 0)
@@ -236,7 +236,7 @@ int task_init(struct task *task, struct process *process)
     task->registers.ip = MAEROS_PROGRAM_VIRTUAL_ADDRESS;
     if (process->filetype == PROCESS_FILETYPE_ELF)
     {
-        task->registers.ip = elf_header(process->elf_file)->e_entry;
+        //task->registers.ip = elf_header(process->elf_file)->e_entry;
     }
 
     task->registers.ss = USER_DATA_SEGMENT;
@@ -260,7 +260,7 @@ void* task_get_stack_item(struct task* task, int index)
     result = (void*) sp_ptr[index];
 
     // Switch back to the kernel page
-    kernel_page();
+    //kernel_page();
 
     return result;
 }

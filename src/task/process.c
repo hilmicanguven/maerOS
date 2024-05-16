@@ -7,24 +7,28 @@
 #include "fs/file.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
-#include "loader/formats/elfloader.h"
+//#include "loader/formats/elfloader.h"
 #include "kernel.h"
 
-// The current process that is running
+/* @brief The current process that is running */
 struct process* current_process = 0;
 
+/** @brief created processes list*/
 static struct process* processes[MAEROS_MAX_PROCESSES] = {};
 
+/** @brief initialize process by clearing 'process' */
 static void process_init(struct process* process)
 {
     memset(process, 0, sizeof(struct process));
 }
 
+/** @brief return the current process */
 struct process* process_current()
 {
     return current_process;
 }
 
+/** @brief return process from processes array */
 struct process* process_get(int process_id)
 {
     if (process_id < 0 || process_id >= MAEROS_MAX_PROCESSES)
@@ -122,7 +126,6 @@ static struct process_allocation* process_get_allocation_by_addr(struct process*
     return 0;
 }
 
-
 int process_terminate_allocations(struct process* process)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -139,11 +142,12 @@ int process_free_binary_data(struct process* process)
     return 0;
 }
 
-int process_free_elf_data(struct process* process)
-{
-    elf_close(process->elf_file);
-    return 0;
-}
+// int process_free_elf_data(struct process* process)
+// {
+//     elf_close(process->elf_file);
+//     return 0;
+// }
+
 int process_free_program_data(struct process* process)
 {
     int res = 0;
@@ -154,7 +158,7 @@ int process_free_program_data(struct process* process)
         break;
 
         case PROCESS_FILETYPE_ELF:
-            res = process_free_elf_data(process);
+            //res = process_free_elf_data(process);
         break;
 
         default:
@@ -234,7 +238,6 @@ int process_count_command_arguments(struct command_argument* root_argument)
     return i;
 }
 
-
 int process_inject_arguments(struct process* process, struct command_argument* root_argument)
 {
     int res = 0;
@@ -275,6 +278,7 @@ int process_inject_arguments(struct process* process, struct command_argument* r
 out:
     return res;
 }
+
 void process_free(struct process* process, void* ptr)
 {
     // Unlink the pages from the process for the given address
@@ -298,6 +302,7 @@ void process_free(struct process* process, void* ptr)
     kfree(ptr);
 }
 
+/** @brief if file is binary, this function load the file */
 static int process_load_binary(const char* filename, struct process* process)
 {
     void* program_data_ptr = 0x00;
@@ -348,18 +353,22 @@ out:
 static int process_load_elf(const char* filename, struct process* process)
 {
     int res = 0;
-    struct elf_file* elf_file = 0;
-    res = elf_load(filename, &elf_file);
-    if (ISERR(res))
-    {
-        goto out;
-    }
+//     struct elf_file* elf_file = 0;
+//     res = elf_load(filename, &elf_file);
+//     if (ISERR(res))
+//     {
+//         goto out;
+//     }
 
-    process->filetype = PROCESS_FILETYPE_ELF;
-    process->elf_file = elf_file;
-out:
+//     process->filetype = PROCESS_FILETYPE_ELF;
+//     process->elf_file = elf_file;
+// out:
     return res;
 }
+
+/** @brief will be in charge of looking into the file, finding out what type of file it is.
+ * Is it an executable, is it a raw binary file? then it is responsible for loading data.
+*/
 static int process_load_data(const char* filename, struct process* process)
 {
     int res = 0;
@@ -372,37 +381,48 @@ static int process_load_data(const char* filename, struct process* process)
     return res;
 }
 
+/** @brief map process to virtual addresses if file type is binary */
 int process_map_binary(struct process* process)
 {
     int res = 0;
-    paging_map_to(process->task->page_directory, (void*) MAEROS_PROGRAM_VIRTUAL_ADDRESS, process->ptr, paging_align_address(process->ptr + process->size), PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE);
+    paging_map_to(process->task->page_directory /* Page directory */, 
+                (void*) MAEROS_PROGRAM_VIRTUAL_ADDRESS, 
+                process->ptr, 
+                paging_align_address(process->ptr + process->size), 
+                PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE /* write to process memory */);
+
     return res;
 }
 
+/** @brief map process to virtual addresses if file type is .elf */
 static int process_map_elf(struct process* process)
 {
     int res = 0;
 
-    struct elf_file* elf_file = process->elf_file;
-    struct elf_header* header = elf_header(elf_file);
-    struct elf32_phdr* phdrs = elf_pheader(header);
-    for (int i = 0; i < header->e_phnum; i++)
-    {
-        struct elf32_phdr* phdr = &phdrs[i];
-        void* phdr_phys_address = elf_phdr_phys_address(elf_file, phdr);
-        int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
-        if (phdr->p_flags & PF_W)
-        {
-            flags |= PAGING_IS_WRITEABLE;
-        }
-        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_memsz), flags);
-        if (ISERR(res))
-        {
-            break;
-        }
-    }
+    // struct elf_file* elf_file = process->elf_file;
+    // struct elf_header* header = elf_header(elf_file);
+    // struct elf32_phdr* phdrs = elf_pheader(header);
+    // for (int i = 0; i < header->e_phnum; i++)
+    // {
+    //     struct elf32_phdr* phdr = &phdrs[i];
+    //     void* phdr_phys_address = elf_phdr_phys_address(elf_file, phdr);
+    //     int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
+    //     if (phdr->p_flags & PF_W)
+    //     {
+    //         flags |= PAGING_IS_WRITEABLE;
+    //     }
+    //     res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_memsz), flags);
+    //     if (ISERR(res))
+    //     {
+    //         break;
+    //     }
+    // }
     return res;
 }
+
+/** @brief take the process we've loaded and it will map it to the virtual addresses of the 
+ * page tables for the for the process.
+ */
 int process_map_memory(struct process* process)
 {
     int res = 0;
@@ -432,6 +452,7 @@ out:
     return res;
 }
 
+/** @brief pass through process array and find empty slot */
 int process_get_free_slot()
 {
     for (int i = 0; i < MAEROS_MAX_PROCESSES; i++)
@@ -443,6 +464,7 @@ int process_get_free_slot()
     return -EISTKN;
 }
 
+/** @brief find a empty slot and load process to the that index in process array */
 int process_load(const char* filename, struct process** process)
 {
     int res = 0;
@@ -469,6 +491,9 @@ int process_load_switch(const char* filename, struct process** process)
     return res;
 }
 
+/** @brief slot means index of process array named 'processes' 
+ * process load for slot will load the given 'filename' as a process into memory.
+*/
 int process_load_for_slot(const char* filename, struct process** process, int process_slot)
 {
     int res = 0;
@@ -536,7 +561,7 @@ out:
             task_free(_process->task);
         }
 
-       // Free the process data
+       // TODO: Free the process data
     }
     return res;
 }
