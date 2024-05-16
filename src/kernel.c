@@ -16,6 +16,8 @@
 #include "gdt/gdt.h"
 
 #include "task/tss.h"
+#include "task/process.h"
+#include "status.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -61,6 +63,7 @@ struct gdt_structured gdt_structured[MAEROS_TOTAL_GDT_SEGMENTS] = {
 void kernel_main()
 {
     terminal_initialize();
+    print("Kernel Start\n");
     
     //print("H E L O \n WORLD");
     memset(gdt_real, 0x00, sizeof(gdt_real));
@@ -68,16 +71,23 @@ void kernel_main()
 
     // Load the gdt
     gdt_load(gdt_real, sizeof(gdt_real));
+    print("GDT Loaded \n");
+
     kheap_init();
+    print("kernel heap initialized \n");
 
     /* initiliaze file systems */
     fs_init();
+    print("file system init \n");
+
 
     /* search and initialize a disk */
     disk_search_and_init();
+    print("disk search and init \n");
 
     /* interrupt descriptor table init*/
     idt_init();
+    print("idt \n");
 
     // Setup the TSS
     memset(&tss, 0x00, sizeof(tss));
@@ -87,18 +97,32 @@ void kernel_main()
     // Load the TSS, 0x28 is because that would be the offset in the GDT
     // in the gdt_real once we pass this structure to the function
     tss_load(0x28);
+    print("TSSegment loaded \n");
+
 
     // Setup paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     
     // Switch to kernel paging chunk
     paging_switch(kernel_chunk);
+    print("Paging is set \n");
 
     // Enable paging
     enable_paging();
+    print("Enable paging \n");
+
+    struct process* process = 0;
+    int ret = process_load("0:/blank.bin", &process);
+    if(MAEROS_ALL_OK != ret)
+    {
+        panic("Failed to load process file \n");
+    }
+    print("user program is loaded \n");
+
+    task_run_first_ever_task();
 
     /* Enable interrupts */
-    enable_interrupts();
+    //enable_interrupts(); it is enabled after loading user program
 
     // void* ptr = kmalloc(50);
     // void* ptr2 = kmalloc(5000);

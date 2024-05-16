@@ -2,16 +2,10 @@ ENTRY(_start)
 OUTPUT_FORMAT(binary)
 SECTIONS
 {
-    /* user stack starting address */
     . = 0x400000;
     .text : ALIGN(4096)
     {
         *(.text)
-    }
-
-    .asm : ALIGN(4096)
-    {
-        *(.asm)
     }
 
     .rodata : ALIGN(4096)
@@ -28,5 +22,10 @@ SECTIONS
     {
         *(COMMON)
         *(.bss)
+    }
+
+    .asm : ALIGN(4096)
+    {
+        *(.asm)
     }
 }
