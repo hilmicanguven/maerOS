@@ -28,6 +28,7 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 	sudo cp ./hello.txt /mnt/d
 	sudo cp ./programs/blank/blank.bin /mnt/d
 #	sudo cp ./programs/shell/shell.elf /mnt/d
+	sudo umount /mnt/d
 	
 #below creates 512 byte long binary file
 #nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin

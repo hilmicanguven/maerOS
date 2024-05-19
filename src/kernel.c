@@ -120,6 +120,7 @@ void kernel_main()
     print("user program is loaded \n");
 
     task_run_first_ever_task();
+     print("run first program \n");
 
     /* Enable interrupts */
     //enable_interrupts(); it is enabled after loading user program
