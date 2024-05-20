@@ -1,32 +1,36 @@
 section .asm
 
+
+
+; ------------------------------------------------------------------------------
 ; handler functions implemented in C code
-extern int21_handler
-extern no_interrupt_handler
-extern isr80h_handler
+; ------------------------------------------------------------------------------
+extern int21_handler        ; interrupt 21h is keyboard handler
+extern no_interrupt_handler ; exception occured but no handler is set for this exception
+extern isr80h_handler       ; interrupt 80h for printf 
+extern interrupt_handler
+; ------------------------------------------------------------------------------
 
-; initialize 21h interrupt which is keyboard interrupt
-global init21h
 
-; no interrupt routine
-global no_interrupt
+; ------------------------------------------------------------------------------
+; function implemented in .Asm file (global function prototypes seen by C files)
+; ------------------------------------------------------------------------------
+global init21h      ; initialize 21h interrupt which is keyboard interrupt
+global no_interrupt ; no interrupt routine
+global idt_load     ; load interrupt descriptor table via C files. it is global to be seen by C files
+                    ; Notice the first parameter to this function will be idt address
+global enable_interrupts    ; enable interrupts
+global disable_interrupts   ; disable interrupts
+global isr80h_wrapper       ; wrapper for handling interrupt 0x80
+; ------------------------------------------------------------------------------
 
-; load interrupt descriptor table via C files. it is global to be seen by C files
-; Notice the first parameter to this function will be idt address
-global idt_load
-
-; enable and disable interrupts
-global enable_interrupts
-global disable_interrupts
-global isr80h_wrapper
 
 enable_interrupts:
-    ;Enable the interrupts
-    sti
+    sti     ; Enable the interrupts
     ret
 
 disable_interrupts:
-    cli
+    cli     ; Clear interrupt instruction
     ret
 
 idt_load:
@@ -59,6 +63,10 @@ no_interrupt:
     popad
     iret
 
+; @note when idt_set is called, we set some flags and some of them causes disabling interrupts
+; Therefore, no need to disabke/enable interrupt starting/end of routine
+; It can be also removed at tther interrupt handler routines (int21h, ....)
+
 isr80h_wrapper:
     ; INTERRUPT FRAME START
     ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
@@ -73,6 +81,7 @@ isr80h_wrapper:
     ; INTERRUPT FRAME END
 
     ; Push the stack pointer so that we are pointing to the interrupt frame
+
     ; Later we use this pointer to cast interrupt frame
     push esp
 

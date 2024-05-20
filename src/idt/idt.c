@@ -4,6 +4,7 @@
 #include "memory/memory.h"
 #include "io/io.h"
 #include "task/task.h"
+#include "status.h"
 
 /**
  * @brief The table (IDT Interrupt Descriptor Table) which holds 
@@ -114,16 +115,15 @@ void idt_init()
     idt_load(&idtr_descriptor);
 }
 
-// int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback)
-// {
-//     if (interrupt < 0 || interrupt >= MAEROS_TOTAL_INTERRUPTS)
-//     {
-//         return -EINVARG;
-//     }
+int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback)
+{
+    if (interrupt < 0 || interrupt >= MAEROS_TOTAL_INTERRUPTS)
+    {
+        return -EINVARG;
+    }    interrupt_callbacks[interrupt] = interrupt_callback;
+    return 0;
+}
 
-//     interrupt_callbacks[interrupt] = interrupt_callback;
-//     return 0;
-// }
 
 /** @brief add syscall to commands table 
  * @note The kernel commands should be reserved only for a
