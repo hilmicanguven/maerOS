@@ -3,6 +3,7 @@ section .asm
 ; handler functions implemented in C code
 extern int21_handler
 extern no_interrupt_handler
+extern isr80h_handler
 
 ; initialize 21h interrupt which is keyboard interrupt
 global init21h
@@ -17,6 +18,7 @@ global idt_load
 ; enable and disable interrupts
 global enable_interrupts
 global disable_interrupts
+global isr80h_wrapper
 
 enable_interrupts:
     ;Enable the interrupts
@@ -56,3 +58,36 @@ no_interrupt:
     call no_interrupt_handler
     popad
     iret
+
+isr80h_wrapper:
+    ; INTERRUPT FRAME START
+    ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
+    ; uint32_t ip
+    ; uint32_t cs;
+    ; uint32_t flags
+    ; uint32_t sp;
+    ; uint32_t ss;
+    ; Pushes the general purpose registers to the stack
+    pushad
+    
+    ; INTERRUPT FRAME END
+
+    ; Push the stack pointer so that we are pointing to the interrupt frame
+    ; Later we use this pointer to cast interrupt frame
+    push esp
+
+    ; EAX holds our command lets push it to the stack for isr80h_handler
+    ; it will contain the command that our function that our kernel should invoke.
+    push eax
+    call isr80h_handler
+    mov dword[tmp_res], eax ; eax will have the value for the return result from this function call.
+    add esp, 8              ; since we push 2 times, restore the original location
+
+    ; Restore general purpose registers for user land
+    popad
+    mov eax, [tmp_res]  ;tmp_res: just for ensuring not corrupt eax register accidentally
+    iretd
+
+section .data
+; Inside here is stored the return result from isr80h_handler
+tmp_res: dd 0

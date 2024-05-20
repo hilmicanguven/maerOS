@@ -38,6 +38,8 @@ _start:
     
     jmp $
 
+
+; that changes all the segment registers to point to the kernel data segment.
 kernel_registers:
     mov ax, 0x10
     mov ds, ax

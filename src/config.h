@@ -74,6 +74,7 @@
 */
 #define USER_CODE_SEGMENT 0x1b
 
+/** @brief maximum number of commands that kernel responds to user via 0x80 interrupt */
 #define MAEROS_MAX_ISR80H_COMMANDS 1024
 
 #define MAEROS_KEYBOARD_BUFFER_SIZE 1024

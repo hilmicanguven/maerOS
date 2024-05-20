@@ -129,6 +129,7 @@ int task_switch(struct task *task)
     return 0;
 }
 
+/** @brief Get registers from integer frame */
 void task_save_state(struct task *task, struct interrupt_frame *frame)
 {
     task->registers.ip = frame->ip;
@@ -193,8 +194,7 @@ void task_current_save_state(struct interrupt_frame *frame)
     task_save_state(task, frame);
 }
 
-/** @brief Task page takes us out of the kernel page directory and 
- * loads us into the task page directory.*/
+
 int task_page()
 {
     user_registers();

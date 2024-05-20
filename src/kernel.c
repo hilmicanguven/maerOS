@@ -175,6 +175,17 @@ void kernel_main()
     while(1);
 }
 
+/** @brief this will switch the page directory to the kernel page directory. 
+ * And it will also change the registers to the kernel registers.
+*/
+void kernel_page()
+{
+    /* changes all the segment registers to point to the kernel data segment */
+    kernel_registers();
+    paging_switch(kernel_chunk);
+}
+
+
 void panic(const char* msg)
 {
     print(msg);

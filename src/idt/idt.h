@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 struct interrupt_frame;
+
+/** @brief function prototypes for different commands */
 typedef void*(*ISR80H_COMMAND)(struct interrupt_frame* frame);
 typedef void(*INTERRUPT_CALLBACK_FUNCTION)();
 
@@ -32,6 +34,9 @@ struct idtr_desc
     uint32_t base; // Base address of the start of the interrupt descriptor table
 } __attribute__((packed));
 
+/** @brief interrupt frame is the structure which holds required registers
+ * during communication/traveling between user and kernel land
+*/
 struct interrupt_frame
 {
     uint32_t edi;
@@ -66,6 +71,8 @@ void idt_set(int interrupt_no, void* address);
 void enable_interrupts();
 /** @brief Disabling interrupts (in asm file) */
 void disable_interrupts();
+
+/** @brief add 0x80 command to the command array */
 void isr80h_register_command(int command_id, ISR80H_COMMAND command);
 int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback);
 

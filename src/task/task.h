@@ -58,6 +58,9 @@ struct task* task_get_next();
 int task_free(struct task* task);
 
 int task_switch(struct task* task);
+
+/** @brief Task page takes us out of the kernel page directory and 
+ * loads us into the task page directory.*/
 int task_page();
 int task_page_task(struct task* task);
 
@@ -70,7 +73,9 @@ void task_return(struct registers* regs);
 void restore_general_purpose_registers(struct registers* regs);
 void user_registers();
 
+/** @brief Save the current task state (registers) */
 void task_current_save_state(struct interrupt_frame *frame);
+
 int copy_string_from_task(struct task* task, void* virtual, void* phys, int max);
 void* task_get_stack_item(struct task* task, int index);
 void* task_virtual_address_to_physical(struct task* task, void* virtual_address);
