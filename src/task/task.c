@@ -146,6 +146,16 @@ void task_save_state(struct task *task, struct interrupt_frame *frame)
     task->registers.esi = frame->esi;
 }
 
+/** @brief Copy string from task. We unfortunately cannot access from kernel land directly 
+ * because the virtual address will be mapped in the process address range.
+ * i.e. 'virtual' may be 0x400015 points to physical address (we do not know at first)
+ * We can not copy from 0x400015 because all processes share same address as virtual
+ * 
+ * we create a shared memory 'tmp' in kernel.
+ * ıt is used for copying strings between task and kernel
+ * 
+ * @retval return string via 'phys'
+ * */
 int copy_string_from_task(struct task* task, void* virtual, void* phys, int max)
 {
     if (max >= PAGING_PAGE_SIZE)
@@ -161,13 +171,19 @@ int copy_string_from_task(struct task* task, void* virtual, void* phys, int max)
         goto out;
     }
 
+    /* task page directory */
     uint32_t* task_directory = task->page_directory->directory_entry;
     uint32_t old_entry = paging_get(task_directory, tmp);
+
+    /* map the virtual address temp to physical address temp for that task */
     paging_map(task->page_directory, tmp, tmp, PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    
+
     paging_switch(task->page_directory);
     strncpy(tmp, virtual, max);
-    //kernel_page();
+    kernel_page();
 
+    /* restore task old state (old paging table)*/
     res = paging_set(task_directory, tmp, old_entry);
     if (res < 0)
     {

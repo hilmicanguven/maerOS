@@ -5,7 +5,21 @@
 #include "heap.h"
 #include "process.h"
 
-/** @brief The function registers command (sycalls) to command array (syscall table) */
+/**
+ * In Intel architecture, interrupt 0x80 is used for making system calls in 
+ * Linux. When a software running in user mode wants to request a service 
+ * from the kernel (which runs in privileged mode), it can do so by 
+ * triggering interrupt 0x80.
+ * 
+ * When this interrupt is triggered, the CPU switches from user mode to 
+ * kernel mode, and the control is transferred to a specific handler in the 
+ * kernel, which then performs the requested operation. This mechanism 
+ * allows user programs to access kernel functionalities, such as file 
+ * operations, process management, and network operations, in a controlled 
+ * and secure manner.
+*/
+
+/** @brief The function registers command (syscalls) to command array (syscall table) */
 void isr80h_register_commands()
 {
     isr80h_register_command(SYSTEM_COMMAND0_SUM, isr80h_command0_sum);

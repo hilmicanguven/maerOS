@@ -197,6 +197,8 @@ void* paging_get_physical_address(uint32_t* directory, void* virt)
     return (void*)((paging_get(directory, virt_addr_new) & 0xfffff000) + difference);
 }
 
+/** @brief take the virtual address and it's going to grab us the actual 
+ * entry in that page table. (Return physical address for the virtual address) */
 uint32_t paging_get(uint32_t* directory, void* virt)
 {
     uint32_t directory_index = 0;
