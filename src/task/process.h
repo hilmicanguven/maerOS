@@ -66,7 +66,7 @@ struct process
 
     /** @brief The size of the data pointed to by "ptr" */
     uint32_t size;
-
+    /** @brief keyboard buffer structure*/
     struct keyboard_buffer
     {
         char buffer[MAEROS_KEYBOARD_BUFFER_SIZE];

@@ -1,1 +1,1 @@
-git remote set-url origin https://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@github.com/hilmicanguven/maerOS
+git remote set-url origin https://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@github.com/hilmicanguven/maerOS

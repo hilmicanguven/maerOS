@@ -152,7 +152,7 @@ void task_save_state(struct task *task, struct interrupt_frame *frame)
  * We can not copy from 0x400015 because all processes share same address as virtual
  * 
  * we create a shared memory 'tmp' in kernel.
- * ıt is used for copying strings between task and kernel
+ * It is used for copying strings between task and kernel
  * 
  * @retval return string via 'phys'
  * */
