@@ -8,7 +8,7 @@ section .asm
 extern int21_handler        ; interrupt 21h is keyboard handler
 extern no_interrupt_handler ; exception occured but no handler is set for this exception
 extern isr80h_handler       ; interrupt 80h for printf 
-extern interrupt_handler
+extern interrupt_handler    ; interrupt handler which expects interrupt number
 ; ------------------------------------------------------------------------------
 
 
@@ -19,9 +19,10 @@ global init21h      ; initialize 21h interrupt which is keyboard interrupt
 global no_interrupt ; no interrupt routine
 global idt_load     ; load interrupt descriptor table via C files. it is global to be seen by C files
                     ; Notice the first parameter to this function will be idt address
-global enable_interrupts    ; enable interrupts
-global disable_interrupts   ; disable interrupts
-global isr80h_wrapper       ; wrapper for handling interrupt 0x80
+global enable_interrupts        ; enable interrupts
+global disable_interrupts       ; disable interrupts
+global isr80h_wrapper           ; wrapper for handling interrupt 0x80
+global interrupt_pointer_table  ; interrupt handlers array
 ; ------------------------------------------------------------------------------
 
 
@@ -46,22 +47,55 @@ idt_load:
     pop ebp     ;   pop the base pointer
     ret
 
+; it is commented since we change idt design (now it is managed in C file, interrupt_handler function) 
 ; keyboard interrupt
-init21h:
-    cli     ; clear interrupts
-    pushad  ; push all general purpose register
+; init21h:
+;     cli     ; clear interrupts
+;     pushad  ; push all general purpose register
 
-    call int21_handler
+;     call int21_handler
 
-    popad   ; pop all general purpose register
-    sti     ; enable interrupts
-    iret    ; interrupt return
+;     popad   ; pop all general purpose register
+;     sti     ; enable interrupts
+;     iret    ; interrupt return
 
 no_interrupt:
     pushad
     call no_interrupt_handler
     popad
     iret
+
+; create 512 interrupt handlers and declare functions
+; i is replaced by given argument
+%macro interrupt 1
+    global int%1
+    int%1:
+        ; INTERRUPT FRAME START
+        ; ALREADY PUSHED TO US BY THE PROCESSOR UPON ENTRY TO THIS INTERRUPT
+        ; uint32_t ip
+        ; uint32_t cs;
+        ; uint32_t flags
+        ; uint32_t sp;
+        ; uint32_t ss;
+        ; Pushes the general purpose registers to the stack
+        pushad
+        ; Interrupt frame end
+        push esp
+        ; push the label and therefore we know which interrupt is to be handled
+        push dword %1
+        call interrupt_handler
+        add esp, 8
+        popad
+        iret
+%endmacro
+
+; below is for loop
+%assign i 0
+%rep 512
+    interrupt i
+%assign i i+1
+%endrep
+
 
 ; @note when idt_set is called, we set some flags and some of them causes disabling interrupts
 ; Therefore, no need to disabke/enable interrupt starting/end of routine
@@ -100,3 +134,16 @@ isr80h_wrapper:
 section .data
 ; Inside here is stored the return result from isr80h_handler
 tmp_res: dd 0
+
+; this macro creates handler function -> int0, int1, ...
+%macro interrupt_array_entry 1
+    dd int%1
+%endmacro
+
+; create interrupt pointer array and filled via given macro
+interrupt_pointer_table:
+%assign i 0
+%rep 512
+    interrupt_array_entry i
+%assign i i+1
+%endrep

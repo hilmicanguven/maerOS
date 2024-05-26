@@ -7,6 +7,8 @@ struct interrupt_frame;
 
 /** @brief function prototypes for different commands */
 typedef void*(*ISR80H_COMMAND)(struct interrupt_frame* frame);
+
+/** @brief interrupt handler prototype */
 typedef void(*INTERRUPT_CALLBACK_FUNCTION)();
 
 /**

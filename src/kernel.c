@@ -64,6 +64,11 @@ struct gdt_structured gdt_structured[MAEROS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit=sizeof(tss), .type = 0xE9}   // TSS Segment
 };
 
+// void pic_timer_callback(struct interrupt_frame* frame)
+// {
+//     print("timer handlrer is activated \n");
+// }
+
 void kernel_main()
 {
     terminal_initialize();
@@ -123,18 +128,23 @@ void kernel_main()
     keyboard_init();
     print("Initialize keyboard \n");
 
+    /* just for test purposes */
+    // idt_register_interrupt_callback(0x20, pic_timer_callback);
+
 
 
     struct process* process = 0;
-    int ret = process_load("0:/blank.bin", &process);
+    int ret = process_load_switch("0:/blank.bin", &process);
     if(MAEROS_ALL_OK != ret)
     {
         panic("Failed to load process file \n");
     }
     print("user program is loaded \n");
 
+    keyboard_push('A');
+
     task_run_first_ever_task();
-     print("run first program \n");
+    print("run first program \n");
 
     /* Enable interrupts */
     //enable_interrupts(); it is enabled after loading user program

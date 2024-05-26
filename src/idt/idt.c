@@ -19,18 +19,21 @@ struct idt_desc idt_descriptors[MAEROS_TOTAL_INTERRUPTS];
 */
 struct idtr_desc idtr_descriptor;
 
+/** @brief Global interrupt handler addresses filled in .asm code
+ * it contains handler for each interrupt
+ */
 extern void* interrupt_pointer_table[MAEROS_TOTAL_INTERRUPTS];
 
+/** @brief Interrupts are registered to this array. All interrupts' handlers are
+ * added to this table.
+ * @note index refers to interrupt number 
+*/
 static INTERRUPT_CALLBACK_FUNCTION interrupt_callbacks[MAEROS_TOTAL_INTERRUPTS];
 
 /** @brief The array where we add 0x80 interrupt commands */
 static ISR80H_COMMAND isr80h_commands[MAEROS_MAX_ISR80H_COMMANDS];
 
-
-
-/**
- * @brief load interrupt descriptor table via assembly instruction
-*/
+/** @brief load interrupt descriptor table via assembly instruction */
 extern void idt_load(struct idtr_desc* ptr);
 
 /**
@@ -46,12 +49,14 @@ extern void no_interrupt();
 /** @brief .asm routine triggered when 0x80 interrupt occurs */
 extern void isr80h_wrapper();
 
-/** @brief handler for interrupt 0x21 -> keyboard interrupt */
-void int21_handler()
-{
-    print("Keyboard Pressed! \n");
-    outb(0x20, 0x20);   //end of the interrupt
-}
+/** @brief handler for interrupt 0x21 -> keyboard interrupt 
+ * @note it is commented since we change idt design (now it is managed in C file, interrupt_handler function) 
+*/
+// void int21_handler()
+// {
+//     print("Keyboard Pressed! \n");
+//     outb(0x20, 0x20);   //end of the interrupt
+// }
 
 /**
  * @brief when interrupt is not set, this handler is invoked
@@ -59,6 +64,20 @@ void int21_handler()
 void no_interrupt_handler()
 {
     outb(0x20, 0x20);   //end of the interrupt
+}
+
+/** @brief interrupt handler */
+void interrupt_handler(int interrupt, struct interrupt_frame* frame)
+{
+    kernel_page();
+    if (interrupt_callbacks[interrupt] != 0)
+    {
+        task_current_save_state(frame);
+        interrupt_callbacks[interrupt](frame);
+    }
+
+    task_page();
+    outb(0x20, 0x20); /* end of interrupt */
 }
 
 /**
@@ -87,11 +106,11 @@ void idt_init()
 
     for (int i = 0; i < MAEROS_TOTAL_INTERRUPTS; i++)
     {
-        idt_set(i, no_interrupt);
+        idt_set(i, interrupt_pointer_table[i]);
     }
 
     idt_set(0, idt_zero);
-    idt_set(0x21, int21_handler);
+    // idt_set(0x21, int21_handler);
     idt_set(0x80, isr80h_wrapper);
     
     /**
@@ -115,12 +134,16 @@ void idt_init()
     idt_load(&idtr_descriptor);
 }
 
+/** @brief set a handler for given interrupt number and add to the interrupt callback array */
 int idt_register_interrupt_callback(int interrupt, INTERRUPT_CALLBACK_FUNCTION interrupt_callback)
 {
     if (interrupt < 0 || interrupt >= MAEROS_TOTAL_INTERRUPTS)
     {
         return -EINVARG;
-    }    interrupt_callbacks[interrupt] = interrupt_callback;
+    }    
+    
+    interrupt_callbacks[interrupt] = interrupt_callback;
+    
     return 0;
 }
 

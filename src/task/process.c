@@ -9,7 +9,7 @@
 #include "memory/paging/paging.h"
 #include "kernel.h"
 
-/* @brief The current process that is running */
+/** @brief The current process that is running */
 struct process* current_process = 0;
 
 /** @brief created processes list*/
@@ -38,11 +38,12 @@ struct process* process_get(int process_id)
     return processes[process_id];
 }
 
-// int process_switch(struct process* process)
-// {
-//     current_process = process;
-//     return 0;
-// }
+/** @brief switch process  */
+int process_switch(struct process* process)
+{
+    current_process = process;
+    return 0;
+}
 
 // static int process_find_free_allocation_index(struct process* process)
 // {
@@ -481,16 +482,16 @@ out:
     return res;
 }
 
-// int process_load_switch(const char* filename, struct process** process)
-// {
-//     int res = process_load(filename, process);
-//     if (res == 0)
-//     {
-//         process_switch(*process);
-//     }
-
-//     return res;
-// }
+/** @brief load a process and change the current process */
+int process_load_switch(const char* filename, struct process** process)
+{
+    int res = process_load(filename, process);
+    if (res == 0)
+    {
+        process_switch(*process);
+    }
+    return res;
+}
 
 /** @brief slot means index of process array named 'processes' 
  * process load for slot will load the given 'filename' as a process into memory.

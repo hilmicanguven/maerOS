@@ -44,6 +44,7 @@ void classic_keyboard_handle_interrupt();
 
 int classic_keyboard_init()
 {
+    // set interrupt handler for keyboard interrupt number
     idt_register_interrupt_callback(ISR_KEYBOARD_INTERRUPT, classic_keyboard_handle_interrupt);
 
     keyboard_set_capslock(&classic_keyboard, KEYBOARD_CAPS_LOCK_OFF);
