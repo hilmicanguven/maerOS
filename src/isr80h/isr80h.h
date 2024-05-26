@@ -8,6 +8,7 @@ enum SystemCommands
 {
     /** @brief syscall to sum two numbers */
     SYSTEM_COMMAND0_SUM,
+    /** @brief syscall to print message to screen */
     SYSTEM_COMMAND1_PRINT,
     SYSTEM_COMMAND2_GETKEY,
     SYSTEM_COMMAND3_PUTCHAR,

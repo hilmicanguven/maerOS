@@ -21,6 +21,8 @@
 
 #include "isr80h/isr80h.h"
 
+#include "keyboard/keyboard.h"
+
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
@@ -113,8 +115,14 @@ void kernel_main()
     enable_paging();
     print("Enable paging \n");
 
+    // Add syscall to table
     isr80h_register_commands();
     print("Register kernel syscalls \n");
+
+    // Initialize all keyboard in system
+    keyboard_init();
+    print("Initialize keyboard \n");
+
 
 
     struct process* process = 0;

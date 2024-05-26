@@ -4,6 +4,7 @@
         "kheap.h": "c"
     },
     "cSpell.words": [
-        "kfree"
+        "kfree",
+        "osdev"
     ]
 }
