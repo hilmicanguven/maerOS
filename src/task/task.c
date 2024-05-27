@@ -272,6 +272,9 @@ void* task_get_stack_item(struct task* task, int index)
 {
     void* result = 0;
 
+    /* task registers are filled via function call 'task_save_state' */
+    
+    /* we grab the stack pointer for given task */
     uint32_t* sp_ptr = (uint32_t*) task->registers.esp;
 
     // Switch to the given tasks page
@@ -280,7 +283,7 @@ void* task_get_stack_item(struct task* task, int index)
     result = (void*) sp_ptr[index];
 
     // Switch back to the kernel page
-    //kernel_page();
+    kernel_page();
 
     return result;
 }

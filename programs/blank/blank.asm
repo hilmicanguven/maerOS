@@ -4,7 +4,7 @@ section .asm
 global _start
 
 _start:
-    mov eax,0 
+    mov eax,0 ; command 0 is for summation operation
     int 0x80
     
 
