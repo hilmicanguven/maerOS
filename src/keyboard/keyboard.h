@@ -28,10 +28,13 @@ void keyboard_init();
 /** @brief */
 void keyboard_backspace(struct process* process);
 
-/** @brief add a character to keyboard buffer */
+/** @brief add a character to keyboard buffer
+ * (write which key is pressed of keyboard)
+ */
 void keyboard_push(char c);
 
-/** @brief remove a character to keyboard buffer */
+/** @brief remove a character from keyboard buffer 
+ * (get which key is pressed of keyboard)*/
 char keyboard_pop();
 
 /** @brief add a keyboard to keyboard linked list. Note that

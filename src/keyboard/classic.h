@@ -23,8 +23,13 @@
 /** @brief Command 0xAE is enable command  for the first port */
 #define PS2_COMMAND_ENABLE_FIRST_PORT 0xAE
 
+/** @brief scan code for key is released*/
 #define CLASSIC_KEYBOARD_KEY_RELEASED 0x80
+
+/** @brief keyboard interrupt number when any key is pressed */
 #define ISR_KEYBOARD_INTERRUPT 0x21
+
+/** @brief it is the data port of PS2 keyword */
 #define KEYBOARD_INPUT_PORT 0x60
 
 struct keyboard* classic_init();

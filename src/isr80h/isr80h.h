@@ -10,7 +10,9 @@ enum SystemCommands
     SYSTEM_COMMAND0_SUM,
     /** @brief syscall to print message to screen */
     SYSTEM_COMMAND1_PRINT,
+    /** @brief syscall to get keyword which is pressed */
     SYSTEM_COMMAND2_GETKEY,
+    /** @brief syscall to put characters to screen */
     SYSTEM_COMMAND3_PUTCHAR,
     SYSTEM_COMMAND4_MALLOC,
     SYSTEM_COMMAND5_FREE,

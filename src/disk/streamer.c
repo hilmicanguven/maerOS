@@ -29,11 +29,16 @@ int diskstreamer_read(struct disk_stream* stream, void* out, int total)
     int sector = stream->pos / MAEROS_SECTOR_SIZE;
     int offset = stream->pos % MAEROS_SECTOR_SIZE;
     int total_to_read = total;
+    
+    /* if read amount if greater than buffer */
     bool overflow = (offset+total_to_read) >= MAEROS_SECTOR_SIZE;
+    
     char buf[MAEROS_SECTOR_SIZE];
 
     if (overflow)
     {
+        /* how many bytes we can read for remaining size of buffer 
+        rest will be read by calling this function again (at the end of this function)*/
         total_to_read -= (offset+total_to_read) - MAEROS_SECTOR_SIZE;
     }
 

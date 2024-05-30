@@ -64,9 +64,9 @@ struct gdt_structured gdt_structured[MAEROS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit=sizeof(tss), .type = 0xE9}   // TSS Segment
 };
 
-// void pic_timer_callback(struct interrupt_frame* frame)
+// void pic_timer_callback()
 // {
-//     print("timer handlrer is activated \n");
+//     print("timer handler is activated \n");
 // }
 
 void kernel_main()
@@ -141,7 +141,7 @@ void kernel_main()
     }
     print("user program is loaded \n");
 
-    keyboard_push('A');
+    //keyboard_push('A');
 
     task_run_first_ever_task();
     print("run first program \n");
@@ -244,11 +244,13 @@ uint16_t terminal_make_char(char c, char colour)
     return (colour << 8) | c;
 }
 
+/** @brief put character on the screen at given location */
 void terminal_putchar(int x, int y, char c, char colour)
 {
     video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(c, colour);
 }
 
+/** @brief the function clears character in console when backspace key is pressed */
 void terminal_backspace()
 {
     if (terminal_row == 0 && terminal_col == 0)
@@ -263,6 +265,7 @@ void terminal_backspace()
     }
 
     terminal_col -=1;
+    /* override existing character */
     terminal_writechar(' ', 15);
     terminal_col -=1;
 }
@@ -276,7 +279,7 @@ void terminal_writechar(char c, char colour)
         return;
     }
 
-    if (c == 0x08)
+    if (c == 0x08 /* backspace's ascii code is 0x8*/)
     {
         terminal_backspace();
         return;

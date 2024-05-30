@@ -35,15 +35,18 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 #nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
 
 ./bin/kernel.bin: $(FILES)
+	@mkdir -p $(@D)
 	i686-elf-ld -g -relocatable $(FILES) -o ./build/kernelfull.o
 	i686-elf-gcc $(FLAGS) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./build/kernelfull.o
 
 #assemble our file to object files for each file
 ./bin/boot.bin: ./src/boot/boot.asm
+	@mkdir -p $(@D)
 	nasm -f bin ./src/boot/boot.asm -o ./bin/boot.bin
 
 #link the kernel
 ./build/kernel.asm.o: ./src/kernel.asm
+	@mkdir -p $(@D)
 	nasm -f elf -g ./src/kernel.asm -o ./build/kernel.asm.o
 
 #./build/kernel.o: ./src/kernel.c
@@ -51,19 +54,27 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 
 #interrupt descriptor table assembled
 ./build/idt/idt.asm.o: ./src/idt/idt.asm
+	@mkdir -p $(@D)
 	nasm -f elf -g ./src/idt/idt.asm -o ./build/idt/idt.asm.o
 
 #global descriptor table assembled
 ./build/gdt/gdt.asm.o: ./src/gdt/gdt.asm
+	@mkdir -p $(@D)
 	nasm -f elf -g ./src/gdt/gdt.asm -o ./build/gdt/gdt.asm.o
 
 ./build/task/tss.asm.o: ./src/task/tss.asm
+	@mkdir -p $(@D)
 	nasm -f elf -g ./src/task/tss.asm -o ./build/task/tss.asm.o
 
 ./build/task/task.asm.o: ./src/task/task.asm
-	nasm -f elf -g ./src/task/task.asm -o ./build/task/task.asm.o
+	@mkdir -p $(@D)
+	@nasm -f elf -g ./src/task/task.asm -o ./build/task/task.asm.o
 
 ./build/%.o: ./src/%.c
+	@mkdir -p $(@D)
+	@echo $(@D)
+	@echo $^
+	@echo $@
 	@echo "i am compiling -> $^ "
 	@i686-elf-gcc $(INCLUDES) $(FLAGS) -std=gnu99 -c $^ -o $@
 #
@@ -83,9 +94,11 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 #	i686-elf-gcc $(INCLUDES) -I./src/fs $(FLAGS) -std=gnu99 -c ./src/memory/paging/paging.c -o ./build/memory/paging/paging.o
 
 ./build/memory/paging/paging.asm.o: ./src/memory/paging/paging.asm
+	@mkdir -p $(@D)
 	nasm -f elf -g ./src/memory/paging/paging.asm -o ./build/memory/paging/paging.asm.o
 
 ./build/io/io.asm.o: ./src/io/io.asm
+	@mkdir -p $(@D)
 	nasm -f elf -g ./src/io/io.asm -o ./build/io/io.asm.o
 
 #user land programs

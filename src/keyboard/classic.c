@@ -39,7 +39,7 @@ struct keyboard classic_keyboard = {
     .init = classic_keyboard_init
 };
 
-
+/** @brief interrupt handler triggered when keyboard is pressed*/
 void classic_keyboard_handle_interrupt();
 
 int classic_keyboard_init()
@@ -74,16 +74,16 @@ uint8_t classic_keyboard_scancode_to_char(uint8_t scancode)
     return c;
 }
 
-
 void classic_keyboard_handle_interrupt()
 {
     kernel_page();
     uint8_t scancode = 0;
     scancode = insb(KEYBOARD_INPUT_PORT);
-    insb(KEYBOARD_INPUT_PORT);
+    insb(KEYBOARD_INPUT_PORT); //this reading is just for ignore 1 byte (this byte is other information that we do not care about)
 
     if(scancode & CLASSIC_KEYBOARD_KEY_RELEASED)
     {
+        // key is released, no other key pressing is coming 
         return;
     }
 
@@ -96,7 +96,7 @@ void classic_keyboard_handle_interrupt()
     uint8_t c = classic_keyboard_scancode_to_char(scancode);
     if (c != 0)
     {
-        keyboard_push(c);
+        keyboard_push(c); // push keyword to buffer
     }
 
     task_page();

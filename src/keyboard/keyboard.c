@@ -98,6 +98,7 @@ char keyboard_pop()
 
     struct process* process = task_current()->process;
     int real_index = process->keyboard.head % sizeof(process->keyboard.buffer);
+    // get character from keyboard buffer
     char c = process->keyboard.buffer[real_index];
     if (c == 0x00)
     {
