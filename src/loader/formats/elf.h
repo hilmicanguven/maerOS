@@ -133,7 +133,7 @@ struct elf32_shdr
 struct elf_header
 {
     unsigned char e_ident[EI_NIDENT];
-    /** @brief This member identifies the object file type. (relocateable, executable, shared etc)*/
+    /** @brief This member identifies the object file type. (relocatable, executable, shared etc)*/
     elf32_half e_type;
     elf32_half e_machine;
     elf32_word e_version;
@@ -143,6 +143,7 @@ struct elf_header
     elf32_word e_flags;
     elf32_half e_ehsize;
     elf32_half e_phentsize;
+    /** @brief number of program header */
     elf32_half e_phnum;
     elf32_half e_shentsize;
     elf32_half e_shnum;

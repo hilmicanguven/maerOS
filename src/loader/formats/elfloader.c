@@ -52,7 +52,7 @@ static bool elf_has_program_header(struct elf_header* header)
 }
 
 /**
- * @brief ELF file memory address in pointer
+ * @brief ELF file memory address as pointer
 */
 void* elf_memory(struct elf_file* file)
 {
@@ -94,10 +94,10 @@ struct elf32_shdr* elf_section(struct elf_header* header, int index)
     return &elf_sheader(header)[index];
 }
 
-
+/** @brief Return program header physical address */
 void* elf_phdr_phys_address(struct elf_file* file, struct elf32_phdr* phdr)
 {
-    return elf_memory(file)+phdr->p_offset;
+    return elf_memory(file) + phdr->p_offset;
 }
 
 /** @brief Return string table */
