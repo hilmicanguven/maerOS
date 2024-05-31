@@ -134,7 +134,13 @@ void kernel_main()
 
 
     struct process* process = 0;
-    int ret = process_load_switch("0:/blank.bin", &process);
+    // int ret = process_load_switch("0:/blank.bin", &process);
+    // if(MAEROS_ALL_OK != ret)
+    // {
+    //     panic("Failed to load process file \n");
+    // }
+
+    int ret = process_load_switch("0:/blank.elf", &process);
     if(MAEROS_ALL_OK != ret)
     {
         panic("Failed to load process file \n");

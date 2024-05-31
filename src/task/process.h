@@ -47,7 +47,7 @@ struct process
     When process is killed, free the memory previously allocated */
     struct process_allocation allocations[MAEROS_MAX_PROGRAM_ALLOCATIONS];
 
-    /** @brief */
+    /** @brief Process file type can be .elf or .bin */
     PROCESS_FILETYPE filetype;
 
     /** @brief process type can be changed -> .txt, .elf, ..*/
@@ -57,6 +57,7 @@ struct process
          * It contains code and data, assuming binary process (no section or other headers)
         */
         void* ptr;
+        /** @brief The physical pointer to elf file */
         struct elf_file* elf_file;
     };
     

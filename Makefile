@@ -10,7 +10,7 @@ FILES = ./build/kernel.asm.o ./build/kernel.o ./build/idt/idt.asm.o ./build/idt/
 		./build/string/string.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/task/tss.asm.o \
 		./build/task/task.o ./build/task/process.o ./build/task/task.asm.o \
 		./build/isr80h/isr80h.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o \
-		./build/keyboard/classic.o
+		./build/keyboard/classic.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o
 
 INCLUDES = -I./src
 FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
@@ -27,7 +27,7 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 	sudo mount -t vfat ./bin/os.bin /mnt/d
 #	# Copy a file over
 	sudo cp ./hello.txt /mnt/d
-	sudo cp ./programs/blank/blank.bin /mnt/d
+	sudo cp ./programs/blank/blank.elf /mnt/d
 #	sudo cp ./programs/shell/shell.elf /mnt/d
 	sudo umount /mnt/d
 	
@@ -72,9 +72,9 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 
 ./build/%.o: ./src/%.c
 	@mkdir -p $(@D)
-	@echo $(@D)
-	@echo $^
-	@echo $@
+#	@echo $(@D)
+#	@echo $^
+#	@echo $@
 	@echo "i am compiling -> $^ "
 	@i686-elf-gcc $(INCLUDES) $(FLAGS) -std=gnu99 -c $^ -o $@
 #

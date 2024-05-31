@@ -40,12 +40,17 @@ struct elf_file
     void* physical_base_address;
 
     /**
-     * @brief The physical end address of this bunary
+     * @brief The physical end address of this binary
      */
     void* physical_end_address;
 };
 
+/** @brief responsible for loading an elf file by name.
+ * we set 'file_out' pointer to some memory we declare
+ */
 int elf_load(const char* filename, struct elf_file** file_out);
+
+/** @brief Free the elf file and memory allocated for it */
 void elf_close(struct elf_file* file);
 void* elf_virtual_base(struct elf_file* file);
 void* elf_virtual_end(struct elf_file* file);

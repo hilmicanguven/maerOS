@@ -20,6 +20,7 @@
 
 /** @brief Error process slot is already taken and can not be loaded again */
 #define EISTKN 8
+/** @brief Error invalid format, i.e. we expect .ELF file but it is not .ELF, it is .bin*/
 #define EINFORMAT 9
 
 

@@ -86,6 +86,7 @@ out:
     return res;
 }
 
+/** @brief Align given address to closest upper aligned page size*/
 void* paging_align_address(void* ptr)
 {
     if ((uint32_t)ptr % PAGING_PAGE_SIZE)
@@ -96,6 +97,7 @@ void* paging_align_address(void* ptr)
     return ptr;
 }
 
+/** @brief Return closest lower page aligned address */
 void* paging_align_to_lower_page(void* addr)
 {
     uint32_t _addr = (uint32_t) addr;

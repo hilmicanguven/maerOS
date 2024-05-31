@@ -22,6 +22,8 @@ void kernel_registers();
 
 #define ERROR(value) (void*)(value)
 #define ERROR_I(value) (int)(value)
+
+/** @brief Check return value is error not. It return one if value is error*/
 #define ISERR(value) ((int)value < 0)
 
 #endif

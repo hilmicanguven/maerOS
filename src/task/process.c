@@ -8,6 +8,7 @@
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "kernel.h"
+#include "loader/formats/elfloader.h"
 
 /** @brief The current process that is running */
 struct process* current_process = 0;
@@ -336,6 +337,7 @@ static int process_load_binary(const char* filename, struct process* process)
         goto out;
     }
 
+    process->filetype = PROCESS_FILETYPE_BINARY;
     process->ptr = program_data_ptr;
     process->size = stat.filesize;
 
@@ -344,35 +346,38 @@ out:
     return res;
 }
 
-// static int process_load_elf(const char* filename, struct process* process)
-// {
-//     int res = 0;
-// //     struct elf_file* elf_file = 0;
-// //     res = elf_load(filename, &elf_file);
-// //     if (ISERR(res))
-// //     {
-// //         goto out;
-// //     }
+/** @brief Load elf file to process by setting elf_file field of process struct */
+static int process_load_elf(const char* filename, struct process* process)
+{
+    int res = 0;
+    struct elf_file* elf_file = 0;
+    res = elf_load(filename, &elf_file);
+    if (ISERR(res))
+    {
+        goto out;
+    }
 
-// //     process->filetype = PROCESS_FILETYPE_ELF;
-// //     process->elf_file = elf_file;
-// // out:
-//     return res;
-// }
+    process->filetype = PROCESS_FILETYPE_ELF;
+    process->elf_file = elf_file;
+out:
+    return res;
+}
 
 /** @brief will be in charge of looking into the file, finding out what type of file it is.
  * Is it an executable, is it a raw binary file? then it is responsible for loading data.
+ * First try .elf file, if it is not then load .bin
 */
 static int process_load_data(const char* filename, struct process* process)
 {
     int res = 0;
-    // res = process_load_elf(filename, process);
-    // if (res == -EINFORMAT)
-    // {
-    //     res = process_load_binary(filename, process);
-    // }
+    
+    res = process_load_elf(filename, process);
+    if (res == -EINFORMAT)
+    {
+        res = process_load_binary(filename, process);
+    }
 
-    res = process_load_binary(filename, process);
+    //res = process_load_binary(filename, process);
 
     return res;
 }
@@ -394,33 +399,34 @@ int process_map_binary(struct process* process)
 }
 
 /** @brief map process to virtual addresses if file type is .elf */
-// static int process_map_elf(struct process* process)
-// {
-//     int res = 0;
+static int process_map_elf(struct process* process)
+{
+    int res = 0;
 
-//     // struct elf_file* elf_file = process->elf_file;
-//     // struct elf_header* header = elf_header(elf_file);
-//     // struct elf32_phdr* phdrs = elf_pheader(header);
-//     // for (int i = 0; i < header->e_phnum; i++)
-//     // {
-//     //     struct elf32_phdr* phdr = &phdrs[i];
-//     //     void* phdr_phys_address = elf_phdr_phys_address(elf_file, phdr);
-//     //     int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
-//     //     if (phdr->p_flags & PF_W)
-//     //     {
-//     //         flags |= PAGING_IS_WRITEABLE;
-//     //     }
-//     //     res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_memsz), flags);
-//     //     if (ISERR(res))
-//     //     {
-//     //         break;
-//     //     }
-//     // }
-//     return res;
-// }
+    struct elf_file* elf_file = process->elf_file;
+    struct elf_header* header = elf_header(elf_file);
+    struct elf32_phdr* phdrs = elf_pheader(header);
+    for (int i = 0; i < header->e_phnum; i++)
+    {
+        struct elf32_phdr* phdr = &phdrs[i];
+        void* phdr_phys_address = elf_phdr_phys_address(elf_file, phdr);
+        int flags = PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL;
+        if (phdr->p_flags & PF_W)
+        {
+            flags |= PAGING_IS_WRITEABLE;
+        }
+        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_memsz), flags);
+        if (ISERR(res))
+        {
+            break;
+        }
+    }
+
+    return res;
+}
 
 /** @brief take the process we've loaded and it will map it to the virtual addresses of the 
- * page tables for the for the process.
+ * page tables for the process.
  */
 int process_map_memory(struct process* process)
 {
@@ -428,19 +434,19 @@ int process_map_memory(struct process* process)
 
     res = process_map_binary(process);
 
-//     switch(process->filetype)
-//     {
-//         case PROCESS_FILETYPE_ELF:
-//             res = process_map_elf(process);
-//         break;
+    switch(process->filetype)
+    {
+        case PROCESS_FILETYPE_ELF:
+            res = process_map_elf(process);
+        break;
 
-//         case PROCESS_FILETYPE_BINARY:
-//             res = process_map_binary(process);
-//         break;
+        case PROCESS_FILETYPE_BINARY:
+            res = process_map_binary(process);
+        break;
 
-//         default:
-//             panic("process_map_memory: Invalid filetype\n");
-//     }
+        default:
+            panic("process_map_memory: Invalid filetype\n");
+    }
 
      if (res < 0)
      {
