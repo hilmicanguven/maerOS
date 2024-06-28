@@ -9,7 +9,7 @@ FILES = ./build/kernel.asm.o ./build/kernel.o ./build/idt/idt.asm.o ./build/idt/
 		./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o \
 		./build/string/string.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/task/tss.asm.o \
 		./build/task/task.o ./build/task/process.o ./build/task/task.asm.o \
-		./build/isr80h/isr80h.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o \
+		./build/isr80h/isr80h.o ./build/isr80h/heap.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o \
 		./build/keyboard/classic.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o
 
 INCLUDES = -I./src

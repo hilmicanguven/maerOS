@@ -2,9 +2,11 @@
 #include "peachos.h"
 #include "stdlib.h"
 #include <stdarg.h>
+
+
 int putchar(int c)
 {
-    peachos_putchar((char)c);
+    maeros_putchar((char)c);
     return 0;
 }
 
@@ -26,12 +28,12 @@ int printf(const char *fmt, ...)
 
         switch (*++p)
         {
-        case 'i':
+        case 'i':   //integer
             ival = va_arg(ap, int);
             print(itoa(ival));
             break;
 
-        case 's':
+        case 's':   //character
             sval = va_arg(ap, char *);
             print(sval);
             break;

@@ -16,13 +16,19 @@ struct process_arguments
     char** argv;
 };
 
-
+/** @brief print function implemented in stdlib 
+ * notice that this also call syscal 1 to print to screen 
+*/
 void print(const char* filename);
+
+/** @brief get pressed key by user implemented in standad library */
 int peachos_getkey();
 
-void* peachos_malloc(size_t size);
-void peachos_free(void* ptr);
-void peachos_putchar(char c);
+/** @brief the function calls malloc syscall function */
+void* maeros_malloc(size_t size);
+void maeros_free(void* ptr);
+/** @brief stdlib put char to terminal */
+void maeros_putchar(char c);
 int peachos_getkeyblock();
 void peachos_terminal_readline(char* out, int max, bool output_while_typing);
 void peachos_process_load_start(const char* filename);

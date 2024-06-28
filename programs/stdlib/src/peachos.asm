@@ -2,28 +2,29 @@
 
 section .asm
 
-global print:function
+global print:function ; print is a function label
 global peachos_getkey:function
-global peachos_malloc:function
-global peachos_free:function
-global peachos_putchar:function
+global maeros_malloc:function
+global maeros_free:function
+global maeros_putchar:function
 global peachos_process_load_start:function
 global peachos_process_get_arguments:function 
 global peachos_system:function
 global peachos_exit:function
 
-; void print(const char* filename)
+; void print(const char* message)
 print:
-    push ebp
+    push ebp ; push base pointer
     mov ebp, esp
-    push dword[ebp+8]
-    mov eax, 1 ; Command print
+    push dword[ebp+8]   ; 8 because we pushed twice previously (ebp and return address)
+                        ; thats how we pushed message to stack
+    mov eax, 1 ; syscall to Command print
     int 0x80
-    add esp, 4
-    pop ebp
+    add esp, 4 ; add 4 because we push message (4 bytes) and it should be restored back
+    pop ebp ; pop base pointer
     ret
 
-; int peachos_getkey()
+; int peachos_getkey() //get key from user via terminal
 peachos_getkey:
     push ebp
     mov ebp, esp
@@ -32,8 +33,8 @@ peachos_getkey:
     pop ebp
     ret
 
-; void peachos_putchar(char c)
-peachos_putchar:
+; void maeros_putchar(char c)
+maeros_putchar:
     push ebp
     mov ebp, esp
     mov eax, 3 ; Command putchar
@@ -43,19 +44,19 @@ peachos_putchar:
     pop ebp
     ret
 
-; void* peachos_malloc(size_t size)
-peachos_malloc:
+; void* maeros_malloc(size_t size)
+maeros_malloc:
     push ebp
     mov ebp, esp
-    mov eax, 4 ; Command malloc (Allocates memory for the process)
+    mov eax, 4 ; Command 4 malloc (Allocates memory for the process)
     push dword[ebp+8] ; Variable "size"
     int 0x80
     add esp, 4
     pop ebp
     ret
 
-; void peachos_free(void* ptr)
-peachos_free:
+; void maeros_free(void* ptr)
+maeros_free:
     push ebp
     mov ebp, esp
     mov eax, 5 ; Command 5 free (Frees the allocated memory for this process)

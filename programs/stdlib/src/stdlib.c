@@ -30,10 +30,10 @@ char* itoa(int i)
 
 void* malloc(size_t size)
 {
-    return peachos_malloc(size);
+    return maeros_malloc(size);
 }
 
 void free(void* ptr)
 {
-    peachos_free(ptr);
+    maeros_free(ptr);
 }

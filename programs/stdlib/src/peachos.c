@@ -18,7 +18,7 @@ struct command_argument* peachos_parse_command(const char* command, int max)
         goto out;
     }
 
-    root_command = peachos_malloc(sizeof(struct command_argument));
+    root_command = maeros_malloc(sizeof(struct command_argument));
     if (!root_command)
     {
         goto out;
@@ -32,7 +32,7 @@ struct command_argument* peachos_parse_command(const char* command, int max)
     token = strtok(NULL, " ");
     while(token != 0)
     {
-        struct command_argument* new_command = peachos_malloc(sizeof(struct command_argument));
+        struct command_argument* new_command = maeros_malloc(sizeof(struct command_argument));
         if (!new_command)
         {
             break;
@@ -73,7 +73,7 @@ void peachos_terminal_readline(char* out, int max, bool output_while_typing)
 
         if (output_while_typing)
         {
-            peachos_putchar(key);
+            maeros_putchar(key);
         }
 
         // Backspace

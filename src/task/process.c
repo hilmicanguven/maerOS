@@ -46,22 +46,23 @@ int process_switch(struct process* process)
     return 0;
 }
 
-// static int process_find_free_allocation_index(struct process* process)
-// {
-//     int res = -ENOMEM;
-//     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
-//     {
-//         if (process->allocations[i].ptr == 0)
-//         {
-//             res = i;
-//             break;
-//         }
-//     }
+/** @brief find a free index that is not allocated for that process */
+static int process_find_free_allocation_index(struct process* process)
+{
+    int res = -ENOMEM;
+    for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i].ptr == 0)
+        {
+            res = i;
+            break;
+        }
+    }
 
-//     return res;
-// }
+    return res;
+}
 
-/*
+
 void* process_malloc(struct process* process, size_t size)
 {
     void* ptr = kzalloc(size);
@@ -94,6 +95,9 @@ out_err:
     return 0;
 }
 
+/** @brief function that will check if we can access that pointer
+ * it may belongs to other process
+*/
 static bool process_is_process_pointer(struct process* process, void* ptr)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -105,6 +109,8 @@ static bool process_is_process_pointer(struct process* process, void* ptr)
     return false;
 }
 
+
+/** @brief clear pointer address from "allocation" list of a process */
 static void process_allocation_unjoin(struct process* process, void* ptr)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -116,9 +122,9 @@ static void process_allocation_unjoin(struct process* process, void* ptr)
         }
     }
 }
-*/
 
-/*
+
+
 static struct process_allocation* process_get_allocation_by_addr(struct process* process, void* addr)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -129,7 +135,7 @@ static struct process_allocation* process_get_allocation_by_addr(struct process*
 
     return 0;
 }
-
+/*
 int process_terminate_allocations(struct process* process)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -283,28 +289,28 @@ int process_free_program_data(struct process* process)
 //     return res;
 // }
 
-// void process_free(struct process* process, void* ptr)
-// {
-//     // Unlink the pages from the process for the given address
-//     struct process_allocation* allocation = process_get_allocation_by_addr(process, ptr);
-//     if (!allocation)
-//     {
-//         // Oops its not our pointer.
-//         return;
-//     }
+void process_free(struct process* process, void* ptr)
+{
+    // Unlink the pages from the process for the given address
+    struct process_allocation* allocation = process_get_allocation_by_addr(process, ptr);
+    if (!allocation)
+    {
+        // Oops its not our pointer.
+        return;
+    }
 
-//     int res = paging_map_to(process->task->page_directory, allocation->ptr, allocation->ptr, paging_align_address(allocation->ptr+allocation->size), 0x00);
-//     if (res < 0)
-//     {
-//         return;
-//     }
+    int res = paging_map_to(process->task->page_directory, allocation->ptr, allocation->ptr, paging_align_address(allocation->ptr+allocation->size), 0x00);
+    if (res < 0)
+    {
+        return;
+    }
 
-//     // Unjoin the allocation
-//     process_allocation_unjoin(process, ptr);
+    // Unjoin the allocation
+    process_allocation_unjoin(process, ptr);
 
-//     // We can now free the memory.
-//     kfree(ptr);
-// }
+    // We can now free the memory.
+    kfree(ptr);
+}
 
 /** @brief if file is binary, this function load the file */
 static int process_load_binary(const char* filename, struct process* process)

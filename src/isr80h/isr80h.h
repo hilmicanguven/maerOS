@@ -14,7 +14,9 @@ enum SystemCommands
     SYSTEM_COMMAND2_GETKEY,
     /** @brief syscall to put characters to screen */
     SYSTEM_COMMAND3_PUTCHAR,
+    /** @brief syscall to allocate memory */
     SYSTEM_COMMAND4_MALLOC,
+    /** @brief syscall to free memory*/
     SYSTEM_COMMAND5_FREE,
     SYSTEM_COMMAND6_PROCESS_LOAD_START,
     SYSTEM_COMMAND7_INVOKE_SYSTEM_COMMAND,
