@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "idt.h": "c",
-        "kheap.h": "c"
+        "kheap.h": "c",
+        "string.h": "c"
     },
     "cSpell.words": [
         "kfree",

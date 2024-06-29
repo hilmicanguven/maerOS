@@ -80,6 +80,8 @@ int copy_string_from_task(struct task* task, void* virtual, void* phys, int max)
 
 /** @brief Read an 'index'th item (arguments) from the stack */
 void* task_get_stack_item(struct task* task, int index);
+/** @brief It will take the virtual address the user space provided us and 
+ * it will convert it to a physical address*/
 void* task_virtual_address_to_physical(struct task* task, void* virtual_address);
 void task_next();
 

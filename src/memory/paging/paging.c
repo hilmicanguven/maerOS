@@ -192,10 +192,15 @@ int paging_set(uint32_t *directory, void *virt, uint32_t val)
     return 0;
 }
 
+/** @brief the function return physical address corresponds to virtual adress 'virt' */
 void* paging_get_physical_address(uint32_t* directory, void* virt)
 {
+    // first align the virtual address to the lower page
     void* virt_addr_new = (void*) paging_align_to_lower_page(virt);
+    // then calculate the difference between the lower page and the virtual address provided
+    // This basically gives us an offset.
     void* difference = (void*)((uint32_t) virt - (uint32_t) virt_addr_new);
+    // add that offset to physical address, last 3 bits are flags we ignore it.
     return (void*)((paging_get(directory, virt_addr_new) & 0xfffff000) + difference);
 }
 

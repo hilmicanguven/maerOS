@@ -11,8 +11,8 @@ int main(int argc, char** argv)
         char buf[1024];
         peachos_terminal_readline(buf, sizeof(buf), true);
         print("\n");
-        maeros_process_load_start(buf);
-        // peachos_system_run(buf);
+        // maeros_process_load_start(buf);
+        maeros_system_run(buf);
         
         print("\n");
     }

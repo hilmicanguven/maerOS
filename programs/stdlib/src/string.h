@@ -13,6 +13,7 @@ char* strcpy(char* dest, const char* src);
 char* strncpy(char* dest, const char* src, int count);
 bool isdigit(char c);
 int tonumericdigit(char c);
+/** @brief function "strtok()" is used to split a string into tokens or smaller strings based on a designated delimiter */
 char* strtok(char* str, const char* delimiters);
 
 #endif

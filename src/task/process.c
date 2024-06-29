@@ -76,7 +76,10 @@ void* process_malloc(struct process* process, size_t size)
     {
         goto out_err;
     }
-
+    /* It maps the memory from the pointer virtual address to the pointer 
+    physical address so they share the same virtual address and physical address 
+    and it maps it to the pointer plus size, which is the end of the the allocation.
+    */
     int res = paging_map_to(process->task->page_directory, ptr, ptr, paging_align_address(ptr+size), PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     if (res < 0)
     {
@@ -124,7 +127,7 @@ static void process_allocation_unjoin(struct process* process, void* ptr)
 }
 
 
-
+/** @brief the function return pointer and its size (for that process) */
 static struct process_allocation* process_get_allocation_by_addr(struct process* process, void* addr)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -229,76 +232,87 @@ int process_free_program_data(struct process* process)
 //     return res;
 // }
 
-// void process_get_arguments(struct process* process, int* argc, char*** argv)
-// {
-//     *argc = process->arguments.argc;
-//     *argv = process->arguments.argv;
-// }
+/** @brief get process arguments and fill 'argc' and 'argv' */
+void process_get_arguments(struct process* process, int* argc, char*** argv)
+{
+    *argc = process->arguments.argc;
+    *argv = process->arguments.argv;
+}
 
-// int process_count_command_arguments(struct command_argument* root_argument)
-// {
-//     struct command_argument* current = root_argument;
-//     int i = 0;
-//     while(current)
-//     {
-//         i++;
-//         current = current->next;
-//     }
+/** @brief the function returns how many arguments does command have */
+int process_count_command_arguments(struct command_argument* root_argument)
+{
+    struct command_argument* current = root_argument;
+    int i = 0;
+    while(current)
+    {
+        i++;
+        current = current->next;
+    }
 
-//     return i;
-// }
+    return i;
+}
 
-// int process_inject_arguments(struct process* process, struct command_argument* root_argument)
-// {
-//     int res = 0;
-//     struct command_argument* current = root_argument;
-//     int i = 0;
-//     int argc = process_count_command_arguments(root_argument);
-//     if (argc == 0)
-//     {
-//         res = -EIO;
-//         goto out;
-//     }
+/** @brief function will take any command argument We pass it and 
+ * it will create an argc and argv out of that and it will store that in the process.
+ * 
+ * @note The first parameter, 
+ * argc (argument count) is an integer that indicates how many arguments were entered on the command line when the program was started. 
+ * The second parameter, 
+ * argv (argument vector), is an array of pointers to arrays of character objects.
+*/
+int process_inject_arguments(struct process* process, struct command_argument* root_argument)
+{
+    int res = 0;
+    struct command_argument* current = root_argument;
+    int i = 0;
+    int argc = process_count_command_arguments(root_argument);
+    if (argc == 0)
+    {
+        res = -EIO;
+        goto out;
+    }
 
-//     char **argv = process_malloc(process, sizeof(const char*) * argc);
-//     if (!argv)
-//     {
-//         res = -ENOMEM;
-//         goto out;
-//     }
+    char **argv = process_malloc(process, sizeof(const char*) * argc);
+    if (!argv)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
 
 
-//     while(current)
-//     {
-//         char* argument_str = process_malloc(process, sizeof(current->argument));
-//         if (!argument_str)
-//         {
-//             res = -ENOMEM;
-//             goto out;
-//         }
+    while(current)
+    {
+        char* argument_str = process_malloc(process, sizeof(current->argument));
+        if (!argument_str)
+        {
+            res = -ENOMEM;
+            goto out;
+        }
 
-//         strncpy(argument_str, current->argument, sizeof(current->argument));
-//         argv[i] = argument_str;
-//         current = current->next;
-//         i++;
-//     }
+        strncpy(argument_str, current->argument, sizeof(current->argument));
+        argv[i] = argument_str;
+        current = current->next;
+        i++;
+    }
 
-//     process->arguments.argc = argc;
-//     process->arguments.argv = argv;
-// out:
-//     return res;
-// }
+    process->arguments.argc = argc;
+    process->arguments.argv = argv;
+out:
+    return res;
+}
 
+/** @brief free a pointer address belongs to process 'process' */
 void process_free(struct process* process, void* ptr)
 {
     // Unlink the pages from the process for the given address
     struct process_allocation* allocation = process_get_allocation_by_addr(process, ptr);
     if (!allocation)
     {
-        // Oops its not our pointer.
+        // This pointer 'ptr' does not belong the process 'process'
         return;
     }
-
+    /* kernel can still access that memory and that just prevents the process from being able to access that memory */
     int res = paging_map_to(process->task->page_directory, allocation->ptr, allocation->ptr, paging_align_address(allocation->ptr+allocation->size), 0x00);
     if (res < 0)
     {

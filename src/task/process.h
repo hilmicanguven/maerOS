@@ -13,6 +13,7 @@
 
 typedef unsigned char PROCESS_FILETYPE;
 
+/** @brief keeps pointer and how much memory is allocated for that pointer */
 struct process_allocation
 {
     void* ptr;
@@ -25,6 +26,7 @@ struct command_argument
     struct command_argument* next;
 };
 
+/** @brief process arguments */
 struct process_arguments
 {
     int argc;

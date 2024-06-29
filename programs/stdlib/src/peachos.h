@@ -3,7 +3,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-
+/** @brief command argument list that is written to shell
+ * i.e. echo text -> echo is the first argument and test is the second argument
+*/
 struct command_argument
 {
     char argument[512];
@@ -35,8 +37,9 @@ void peachos_terminal_readline(char* out, int max, bool output_while_typing);
 /** @brief the routine call syscall to load user process */
 void maeros_process_load_start(const char* filename);
 struct command_argument* peachos_parse_command(const char* command, int max);
-void peachos_process_get_arguments(struct process_arguments* arguments);
-int peachos_system(struct command_argument* arguments);
-int peachos_system_run(const char* command);
+/** @brief Asm routine to get process arguments */
+void maeros_process_get_arguments(struct process_arguments* arguments);
+int maeros_system(struct command_argument* arguments);
+int maeros_system_run(const char* command);
 void peachos_exit();
 #endif

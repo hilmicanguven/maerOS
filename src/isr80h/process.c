@@ -35,48 +35,54 @@ out:
     return 0;
 }
 
-// void* isr80h_command7_invoke_system_command(struct interrupt_frame* frame)
-// {
-//     struct command_argument* arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));
-//     if (!arguments || strlen(arguments[0].argument) == 0)
-//     {
-//         return ERROR(-EINVARG);
-//     }
+/** @brief invoke a system command 
+ * 
+ * @note essentially the user land is going to pass us some command arguments and 
+ * then we're going to inject those into the process.
+*/
+void* isr80h_command7_invoke_system_command(struct interrupt_frame* frame)
+{
+    struct command_argument* arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));
+    if (!arguments || strlen(arguments[0].argument) == 0)
+    {
+        return ERROR(-EINVARG);
+    }
 
-//     struct command_argument* root_command_argument = &arguments[0];
-//     const char* program_name = root_command_argument->argument;
+    //simple command can be like:: blank.elf arg1 arg2
+    struct command_argument* root_command_argument = &arguments[0];
+    const char* program_name = root_command_argument->argument;
 
-//     char path[MAEROS_MAX_PATH];
-//     strcpy(path, "0:/");
-//     strncpy(path+3, program_name, sizeof(path));
+    char path[MAEROS_MAX_PATH];
+    strcpy(path, "0:/");
+    strncpy(path+3, program_name, sizeof(path));
     
-//     struct process* process = 0;
-//     int res = process_load_switch(path, &process);
-//     if (res < 0)
-//     {
-//         return ERROR(res);
-//     }
+    struct process* process = 0;
+    int res = process_load_switch(path, &process);
+    if (res < 0)
+    {
+        return ERROR(res);
+    }
     
-//     res = process_inject_arguments(process, root_command_argument);
-//     if (res < 0)
-//     {
-//         return ERROR(res);
-//     }
+    res = process_inject_arguments(process, root_command_argument);
+    if (res < 0)
+    {
+        return ERROR(res);
+    }
 
-//     task_switch(process->task);
-//     task_return(&process->task->registers);
+    task_switch(process->task);
+    task_return(&process->task->registers);
 
-//     return 0;
-// }
+    return 0;
+}
 
-// void* isr80h_command8_get_program_arguments(struct interrupt_frame* frame)
-// {
-//     struct process* process = task_current()->process;
-//     struct process_arguments* arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));
+void* isr80h_command8_get_program_arguments(struct interrupt_frame* frame)
+{
+    struct process* process = task_current()->process;
+    struct process_arguments* arguments = task_virtual_address_to_physical(task_current(), task_get_stack_item(task_current(), 0));
 
-//     process_get_arguments(process, &arguments->argc, &arguments->argv);
-//     return 0;
-// }
+    process_get_arguments(process, &arguments->argc, &arguments->argv);
+    return 0;
+}
 
 // void* isr80h_command9_exit(struct interrupt_frame* frame)
 // {

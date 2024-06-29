@@ -147,6 +147,11 @@ void kernel_main()
     }
     print("user program is loaded \n");
 
+    struct command_argument arguments;
+    strcpy(arguments.argument, "Test");
+    arguments.next = 0;
+    process_inject_arguments(process, &arguments);
+
     //keyboard_push('A');
 
     task_run_first_ever_task();

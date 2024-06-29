@@ -20,7 +20,9 @@ enum SystemCommands
     SYSTEM_COMMAND5_FREE,
     /** @brief syscall to load user process and start its task */
     SYSTEM_COMMAND6_PROCESS_LOAD_START,
+    /** @brief syscall to handle system commands entered by user via shell*/
     SYSTEM_COMMAND7_INVOKE_SYSTEM_COMMAND,
+    /** @brief syscall to get program argument into process*/
     SYSTEM_COMMAND8_GET_PROGRAM_ARGUMENTS,
     SYSTEM_COMMAND9_EXIT
 };

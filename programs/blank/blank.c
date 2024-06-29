@@ -5,8 +5,7 @@
 
 int main(int argc, char** argv)
 {
-    // putchar('H');
-    printf("Hi lmi World!");
+    printf("Hi lmi World! \n");
 
     // while(1)
     // {
@@ -16,5 +15,6 @@ int main(int argc, char** argv)
             
     //     }
     // }
+    while(1);
     return 0;
 }

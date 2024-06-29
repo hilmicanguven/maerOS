@@ -8,8 +8,8 @@ global maeros_malloc:function
 global maeros_free:function
 global maeros_putchar:function
 global maeros_process_load_start:function
-global peachos_process_get_arguments:function 
-global peachos_system:function
+global maeros_process_get_arguments:function 
+global maeros_system:function
 global peachos_exit:function
 
 ; void print(const char* message)
@@ -77,8 +77,8 @@ maeros_process_load_start:
     pop ebp
     ret
 
-; int peachos_system(struct command_argument* arguments)
-peachos_system:
+; int maeros_system(struct command_argument* arguments)
+maeros_system:
     push ebp
     mov ebp, esp
     mov eax, 7 ; Command 7 process_system ( runs a system command based on the arguments)
@@ -89,8 +89,8 @@ peachos_system:
     ret
 
 
-; void peachos_process_get_arguments(struct process_arguments* arguments)
-peachos_process_get_arguments:
+; void maeros_process_get_arguments(struct process_arguments* arguments)
+maeros_process_get_arguments:
     push ebp
     mov ebp, esp
     mov eax, 8 ; Command 8 Gets the process arguments

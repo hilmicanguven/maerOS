@@ -1,6 +1,7 @@
 #include "peachos.h"
 #include "string.h"
 
+/** @brief parse commands by using blank space aws delimiter */
 struct command_argument* peachos_parse_command(const char* command, int max)
 {
     struct command_argument* root_command = 0;
@@ -23,14 +24,14 @@ struct command_argument* peachos_parse_command(const char* command, int max)
     {
         goto out;
     }
-
+    //first argument/command is parsed
     strncpy(root_command->argument, token, sizeof(root_command->argument));
     root_command->next = 0;
 
 
     struct command_argument* current = root_command;
     token = strtok(NULL, " ");
-    while(token != 0)
+    while(token != 0)   //passing through command arguments 
     {
         struct command_argument* new_command = maeros_malloc(sizeof(struct command_argument));
         if (!new_command)
@@ -92,7 +93,7 @@ void peachos_terminal_readline(char* out, int max, bool output_while_typing)
     out[i] = 0x00;
 }
 
-int peachos_system_run(const char* command)
+int maeros_system_run(const char* command)
 {
     char buf[1024];
     strncpy(buf, command, sizeof(buf));
@@ -102,5 +103,5 @@ int peachos_system_run(const char* command)
         return -1;
     }
 
-    return peachos_system(root_command_argument);
+    return maeros_system(root_command_argument);
 }
