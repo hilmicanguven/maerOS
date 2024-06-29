@@ -18,6 +18,7 @@ enum SystemCommands
     SYSTEM_COMMAND4_MALLOC,
     /** @brief syscall to free memory*/
     SYSTEM_COMMAND5_FREE,
+    /** @brief syscall to load user process and start its task */
     SYSTEM_COMMAND6_PROCESS_LOAD_START,
     SYSTEM_COMMAND7_INVOKE_SYSTEM_COMMAND,
     SYSTEM_COMMAND8_GET_PROGRAM_ARGUMENTS,

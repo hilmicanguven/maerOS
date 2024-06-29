@@ -9,7 +9,7 @@ FILES = ./build/kernel.asm.o ./build/kernel.o ./build/idt/idt.asm.o ./build/idt/
 		./build/disk/disk.o ./build/disk/streamer.o ./build/fs/pparser.o ./build/fs/file.o ./build/fs/fat/fat16.o \
 		./build/string/string.o ./build/gdt/gdt.o ./build/gdt/gdt.asm.o ./build/task/tss.asm.o \
 		./build/task/task.o ./build/task/process.o ./build/task/task.asm.o \
-		./build/isr80h/isr80h.o ./build/isr80h/heap.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o \
+		./build/isr80h/isr80h.o ./build/isr80h/heap.o ./build/isr80h/process.o ./build/isr80h/misc.o ./build/isr80h/io.o ./build/keyboard/keyboard.o \
 		./build/keyboard/classic.o ./build/loader/formats/elf.o ./build/loader/formats/elfloader.o
 
 INCLUDES = -I./src
@@ -28,7 +28,7 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 #	# Copy a file over
 	sudo cp ./hello.txt /mnt/d
 	sudo cp ./programs/blank/blank.elf /mnt/d
-#	sudo cp ./programs/shell/shell.elf /mnt/d
+	sudo cp ./programs/shell/shell.elf /mnt/d
 	sudo umount /mnt/d
 	
 #below creates 512 byte long binary file
@@ -105,10 +105,11 @@ all: clean ./bin/boot.bin ./bin/kernel.bin user_programs
 user_programs:
 	cd ./programs/stdlib && $(MAKE) all
 	cd ./programs/blank && $(MAKE) all
+	cd ./programs/shell && $(MAKE) all
 
 user_programs_clean:
-	cd ./programs/stdlib && $(MAKE) clean
-	cd ./programs/blank && $(MAKE) clean
+#	cd ./programs/stdlib && $(MAKE) clean
+#	cd ./programs/blank && $(MAKE) clean
 
 
 clean: user_programs_clean

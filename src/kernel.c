@@ -140,7 +140,7 @@ void kernel_main()
     //     panic("Failed to load process file \n");
     // }
 
-    int ret = process_load_switch("0:/blank.elf", &process);
+    int ret = process_load_switch("0:/shell.elf", &process);
     if(MAEROS_ALL_OK != ret)
     {
         panic("Failed to load process file \n");

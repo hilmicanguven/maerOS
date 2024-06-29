@@ -66,7 +66,7 @@ int task_page_task(struct task* task);
 
 void task_run_first_ever_task();
 
-/** @brief the function will drop us into userland */
+/** @brief the function will drop us into userland, also changes all CPU registers */
 void task_return(struct registers* regs);
 
 /** @brief restore general purpose registers in assembly */

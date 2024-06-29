@@ -7,7 +7,7 @@ global peachos_getkey:function
 global maeros_malloc:function
 global maeros_free:function
 global maeros_putchar:function
-global peachos_process_load_start:function
+global maeros_process_load_start:function
 global peachos_process_get_arguments:function 
 global peachos_system:function
 global peachos_exit:function
@@ -66,14 +66,14 @@ maeros_free:
     pop ebp
     ret
 
-; void peachos_process_load_start(const char* filename)
-peachos_process_load_start:
+; void maeros_process_load_start(const char* filename)
+maeros_process_load_start:
     push ebp
     mov ebp, esp
     mov eax, 6 ; Command 6 process load start ( stars a process )
     push dword[ebp+8] ; Variable "filename"
     int 0x80
-    add esp, 4
+    add esp, 4  ;in contrary to other commands, we do not back from int80h
     pop ebp
     ret
 
