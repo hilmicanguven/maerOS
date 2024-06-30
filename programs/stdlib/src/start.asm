@@ -2,11 +2,13 @@
 
 global _start
 extern c_start
-extern peachos_exit
+extern maeros_exit
 
 section .asm
 
 _start:
+; it starts main program
     call c_start
-    call peachos_exit
+    ;if program returns(not running forever), then exis from a program
+    call maeros_exit
     ret

@@ -138,7 +138,7 @@ static struct process_allocation* process_get_allocation_by_addr(struct process*
 
     return 0;
 }
-/*
+
 int process_terminate_allocations(struct process* process)
 {
     for (int i = 0; i < MAEROS_MAX_PROGRAM_ALLOCATIONS; i++)
@@ -149,17 +149,18 @@ int process_terminate_allocations(struct process* process)
     return 0;
 }
 
+/** @brief free a binary program data loaded in the memory */
 int process_free_binary_data(struct process* process)
 {
     kfree(process->ptr);
     return 0;
 }
 
-// int process_free_elf_data(struct process* process)
-// {
-//     elf_close(process->elf_file);
-//     return 0;
-// }
+int process_free_elf_data(struct process* process)
+{
+    elf_close(process->elf_file);
+    return 0;
+}
 
 int process_free_program_data(struct process* process)
 {
@@ -171,7 +172,7 @@ int process_free_program_data(struct process* process)
         break;
 
         case PROCESS_FILETYPE_ELF:
-            //res = process_free_elf_data(process);
+            res = process_free_elf_data(process);
         break;
 
         default:
@@ -179,58 +180,62 @@ int process_free_program_data(struct process* process)
     }
     return res;
 }
-*/
-// void process_switch_to_any()
-// {
-//     for (int i = 0; i < MAEROS_MAX_PROCESSES; i++)
-//     {
-//         if (processes[i])
-//         {
-//             process_switch(processes[i]);
-//             return;
-//         }
-//     }
+
+/** @brief when a process is terminated, switch to other process */
+void process_switch_to_any()
+{
+    for (int i = 0; i < MAEROS_MAX_PROCESSES; i++)
+    {
+        if (processes[i])
+        {
+            process_switch(processes[i]);
+            return;
+        }
+    }
 
 
-//     panic("No processes to switch too\n");
-// }
+    panic("No processes to switch too\n");
+}
 
-// static void process_unlink(struct process* process)
-// {
-//     processes[process->id] = 0x00;
+/** @brief remove process from processes array */
+static void process_unlink(struct process* process)
+{
+    processes[process->id] = 0x00;
 
-//     if (current_process == process)
-//     {
-//         process_switch_to_any();
-//     }
-// }
+    if (current_process == process)
+    {
+        process_switch_to_any();
+    }
+}
 
-// int process_terminate(struct process* process)
-// {
-//     int res = 0;
+/** @brief terminate/end of a process */
+int process_terminate(struct process* process)
+{
+    int res = 0;
+    /* remove all malloc for the process*/
+    res = process_terminate_allocations(process);
+    if (res < 0)
+    {
+        goto out;
+    }
 
-//     res = process_terminate_allocations(process);
-//     if (res < 0)
-//     {
-//         goto out;
-//     }
+    /* */
+    res = process_free_program_data(process);
+    if (res < 0)
+    {
+        goto out;
+    }
 
-//     res = process_free_program_data(process);
-//     if (res < 0)
-//     {
-//         goto out;
-//     }
+    // Free the process stack memory.
+    kfree(process->stack);
+    // Free the task
+    task_free(process->task);
+    // Unlink the process from the process array.
+    process_unlink(process);
 
-//     // Free the process stack memory.
-//     kfree(process->stack);
-//     // Free the task
-//     task_free(process->task);
-//     // Unlink the process from the process array.
-//     process_unlink(process);
-
-// out:
-//     return res;
-// }
+out:
+    return res;
+}
 
 /** @brief get process arguments and fill 'argc' and 'argv' */
 void process_get_arguments(struct process* process, int* argc, char*** argv)

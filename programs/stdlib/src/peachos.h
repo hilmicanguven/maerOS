@@ -41,5 +41,5 @@ struct command_argument* peachos_parse_command(const char* command, int max);
 void maeros_process_get_arguments(struct process_arguments* arguments);
 int maeros_system(struct command_argument* arguments);
 int maeros_system_run(const char* command);
-void peachos_exit();
+void maeros_exit();
 #endif

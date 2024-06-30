@@ -24,6 +24,7 @@ enum SystemCommands
     SYSTEM_COMMAND7_INVOKE_SYSTEM_COMMAND,
     /** @brief syscall to get program argument into process*/
     SYSTEM_COMMAND8_GET_PROGRAM_ARGUMENTS,
+    /** @brief ssycall to exit a program */
     SYSTEM_COMMAND9_EXIT
 };
 

@@ -15,6 +15,8 @@ void* isr80h_command7_invoke_system_command(struct interrupt_frame* frame);
 
 /** @brief get program/process arguments given via shell */
 void* isr80h_command8_get_program_arguments(struct interrupt_frame* frame);
+
+/** @brief exit/terminate the process/program and runs next task */
 void* isr80h_command9_exit(struct interrupt_frame* frame);
 
 #endif

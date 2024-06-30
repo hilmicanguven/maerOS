@@ -109,6 +109,7 @@ int task_free(struct task *task)
     return 0;
 }
 
+/** @brief swith to next task */
 void task_next()
 {
     struct task* next_task = task_get_next();

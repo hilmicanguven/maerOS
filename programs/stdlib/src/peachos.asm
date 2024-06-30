@@ -10,7 +10,7 @@ global maeros_putchar:function
 global maeros_process_load_start:function
 global maeros_process_get_arguments:function 
 global maeros_system:function
-global peachos_exit:function
+global maeros_exit:function
 
 ; void print(const char* message)
 print:
@@ -100,8 +100,8 @@ maeros_process_get_arguments:
     pop ebp
     ret
 
-; void peachos_exit()
-peachos_exit:
+; void maeros_exit()
+maeros_exit:
     push ebp
     mov ebp, esp
     mov eax, 9 ; Command 9 process exit
