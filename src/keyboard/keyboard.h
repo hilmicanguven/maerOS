@@ -16,7 +16,8 @@ struct keyboard
     /** @brief keyboard specific initialization function */
     KEYBOARD_INIT_FUNCTION init;
     /** @brief name of the function, apple keyboard, logitech keyboard etc*/
-    char name[20];    
+    char name[20];  
+    /** @brief capslock state is on or off */  
     KEYBOARD_CAPS_LOCK_STATE capslock_state;
     /** @brief next keyboard */
     struct keyboard* next;

@@ -61,11 +61,13 @@ void keyboard_backspace(struct process* process)
     process->keyboard.buffer[real_index] = 0x00;
 }
 
+/** @brief set capslock state whether lower case or upper case */
 void keyboard_set_capslock(struct keyboard* keyboard, KEYBOARD_CAPS_LOCK_STATE state)
 {
     keyboard->capslock_state = state;
 }
 
+/** @brief return capslock state whether is on or off */
 KEYBOARD_CAPS_LOCK_STATE keyboard_get_capslock(struct keyboard* keyboard)
 {
     return keyboard->capslock_state;

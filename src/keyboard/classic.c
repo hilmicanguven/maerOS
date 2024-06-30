@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/** @brief the scancode for caps lock key in keyboard */
 #define CLASSIC_KEYBOARD_CAPSLOCK 0x3A
 
 /** @brief "Classic" keyboard initialization function */

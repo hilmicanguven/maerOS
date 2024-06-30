@@ -140,7 +140,9 @@ void kernel_main()
     //     panic("Failed to load process file \n");
     // }
 
-    int ret = process_load_switch("0:/shell.elf", &process);
+    //First program is loaded
+
+    int ret = process_load_switch("0:/blank.elf", &process);
     if(MAEROS_ALL_OK != ret)
     {
         panic("Failed to load process file \n");
@@ -148,11 +150,24 @@ void kernel_main()
     print("user program is loaded \n");
 
     struct command_argument arguments;
-    strcpy(arguments.argument, "Test");
+    strcpy(arguments.argument, "Blank");
     arguments.next = 0;
     process_inject_arguments(process, &arguments);
 
     //keyboard_push('A');
+
+    //Second program is loaded
+
+    ret = process_load_switch("0:/shell.elf", &process);
+    if(MAEROS_ALL_OK != ret)
+    {
+        panic("Failed to load process file \n");
+    }
+    print("user program is loaded \n");
+
+    strcpy(arguments.argument, "Shell");
+    arguments.next = 0;
+    process_inject_arguments(process, &arguments);
 
     task_run_first_ever_task();
     print("run first program \n");
