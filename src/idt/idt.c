@@ -113,7 +113,7 @@ void idt_handle_exception()
     task_next();
 }
 
-/** @brief the interrupt handler for interrrupt 20h which is timer interrupt 
+/** @brief the interrupt handler for interrupt 20h which is timer interrupt 
  * we switch the task whenever this is triggered (in specific time interval)
  * 
  * i think it is kind of scheduler implementation
@@ -124,7 +124,7 @@ void idt_clock()
     outb(0x20, 0x20);
     
     // Switch to the next task
-    //notiec that we never return from task->next
+    //notice that we never return from task->next
     task_next();
 }
 

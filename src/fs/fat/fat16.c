@@ -234,7 +234,7 @@ int fat16_get_root_directory(struct disk *disk, struct fat_private *fat_private,
     
     if (root_dir_size % disk->sector_size)
     {
-        /* to store remaning items*/
+        /* to store remaining items*/
         total_sectors += 1;
     }
 
@@ -653,7 +653,7 @@ out:
     return current_item;
 }
 
-/** @brief */
+/** @brief The function returns file descriptor */
 void *fat16_open(struct disk *disk, struct path_part *path, FILE_MODE mode)
 {
     struct fat_file_descriptor *descriptor = 0;

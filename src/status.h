@@ -15,6 +15,7 @@
 #define ENOMEM 3
 #define EBADPATH 4
 #define EFSNOTUS 5
+/** @brief Error read-only occurs when read-only file is accessed */
 #define ERDONLY 6
 #define EUNIMP 7
 
